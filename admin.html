@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin QR</title>
+</head>
+<body>
+
+<h2>Subir imagen</h2>
+<input type="file" id="file">
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  // 👇 PEGA AQUÍ TU CONFIG
+};
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+const db = getFirestore(app);
+
+document.getElementById("file").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const imageRef = ref(storage, "qr/image.jpg");
+  await uploadBytes(imageRef, file);
+
+  const url = await getDownloadURL(imageRef);
+  await setDoc(doc(db, "qr", "current"), { url });
+
+  alert("Imagen actualizada ✅");
+});
+</script>
+
+</body>
+</html>
