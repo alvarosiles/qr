@@ -2,239 +2,265 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Galería de QR</title>
+  <title>Galería de Códigos QR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f1f3f6;
       margin: 0;
       padding: 20px;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-weight: 600;
     }
 
+    /* GRID RESPONSIVE */
     .qr-container {
       display: grid;
-      gap: 15px;
+      gap: 20px;
     }
 
-    /* 📱 Móvil */
     @media (max-width: 767px) {
-      .qr-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .qr-container { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* 📲 Tablet */
     @media (min-width: 768px) and (max-width: 1023px) {
-      .qr-container {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      .qr-container { grid-template-columns: repeat(4, 1fr); }
     }
 
-    /* 💻 Laptop / Desktop */
     @media (min-width: 1024px) {
-      .qr-container {
-        grid-template-columns: repeat(6, 1fr);
-      }
+      .qr-container { grid-template-columns: repeat(6, 1fr); }
     }
 
-    .qr-item {
+    /* CARD */
+    .qr-card {
       background: #fff;
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 14px 10px 16px;
       text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      transition: transform .2s ease;
     }
 
-    .qr-item img {
+    .qr-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .qr-card img {
       width: 100%;
       max-width: 140px;
-      height: auto;
-      margin-bottom: 8px;
+      margin: 0 auto 10px;
+      display: block;
+    }
+
+    .bank-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 10px;
     }
 
     .actions button,
     .actions a {
-      display: block;
       width: 100%;
-      margin-top: 5px;
-      padding: 6px;
+      padding: 7px;
+      margin-top: 6px;
       font-size: 14px;
+      border-radius: 6px;
+      border: none;
       cursor: pointer;
-    }
-
-    .share-options {
-      display: none;
-      margin-top: 5px;
-    }
-
-    .share-options a {
-      display: block;
-      font-size: 13px;
-      margin-top: 3px;
       text-decoration: none;
+      display: block;
+    }
+
+    .download {
+      background: #e9eef3;
+      color: #000;
+    }
+
+    .share {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      width: 90%;
+      max-width: 320px;
+      border-radius: 14px;
+      text-align: center;
+      animation: fadeIn .25s ease;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .modal-content a {
+      display: block;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 6px;
+      text-decoration: none;
+      background: #f3f4f6;
+      color: #000;
+      font-size: 14px;
+    }
+
+    .close {
+      margin-top: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+    }
+
+    @keyframes fadeIn {
+      from { transform: scale(.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-<h2>Códigos QR</h2>
+<h2>Códigos QR por Banco</h2>
 
 <div class="qr-container">
 
-  <!-- QR ITEM (repetir) -->
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <!-- CARD -->
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
+  <div class="qr-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
+    <div class="bank-name">Banco Nacional</div>
     <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
-    </div>
-  </div>
-  <div class="qr-item">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" alt="QR">
-    <div class="actions">
-      <a href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button onclick="compartir(this)">📤 Compartir</button>
-      <div class="share-options">
-        <a target="_blank">WhatsApp</a>
-        <a target="_blank">Facebook</a>
-        <a target="_blank">X</a>
-      </div>
+      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
+      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
     </div>
   </div>
 
-  <!-- Duplica este bloque hasta llegar a 10 -->
-  <!-- Puedes copiar y pegar 9 veces más -->
+  <!-- DUPLICAR ESTA CARD HASTA 10 -->
+  <!-- Cambia solo el nombre del banco -->
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="shareModal">
+  <div class="modal-content">
+    <h3>Compartir QR</h3>
+    <a id="wa" target="_blank">WhatsApp</a>
+    <a id="fb" target="_blank">Facebook</a>
+    <a id="tw" target="_blank">X (Twitter)</a>
+    <div class="close" onclick="cerrarModal()">Cancelar</div>
+  </div>
 </div>
 
 <script>
-async function compartir(btn) {
-  const item = btn.closest('.qr-item');
-  const img = item.querySelector('img');
-  const url = img.src;
+let currentImg = '';
 
-  // 📱 MÓVIL → Web Share API
+async function abrirCompartir(btn) {
+  const img = btn.closest('.qr-card').querySelector('img').src;
+
+  // 📱 MÓVIL → menú nativo
   if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const file = new File([blob], 'qr.png', { type: blob.type });
+    const res = await fetch(img);
+    const blob = await res.blob();
+    const file = new File([blob], 'qr.png', { type: blob.type });
 
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Código QR',
-          text: 'Comparte este código QR'
-        });
-      }
-    } catch (e) {
-      alert('No se pudo compartir');
+    if (navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: 'Código QR',
+        text: 'Compartir código QR'
+      });
     }
   } 
-  // 💻 LAPTOP → enlaces visibles
+  // 💻 DESKTOP → MODAL
   else {
-    const options = item.querySelector('.share-options');
-    options.style.display = options.style.display === 'block' ? 'none' : 'block';
-
-    options.children[0].href = `https://wa.me/?text=${encodeURIComponent(url)}`;
-    options.children[1].href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-    options.children[2].href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`;
+    currentImg = img;
+    document.getElementById('wa').href =
+      `https://wa.me/?text=${encodeURIComponent(img)}`;
+    document.getElementById('fb').href =
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(img)}`;
+    document.getElementById('tw').href =
+      `https://twitter.com/intent/tweet?url=${encodeURIComponent(img)}`;
+    document.getElementById('shareModal').style.display = 'flex';
   }
+}
+
+function cerrarModal() {
+  document.getElementById('shareModal').style.display = 'none';
 }
 </script>
 
