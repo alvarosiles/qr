@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       background: #f1f3f6;
@@ -19,67 +23,74 @@
       font-weight: 600;
     }
 
-    /* GRID RESPONSIVE */
+    /* GRID 100% ESTABLE */
     .qr-container {
       display: grid;
       gap: 20px;
+      max-width: 1400px;
+      margin: auto;
     }
 
+    /* 📱 Móvil */
     @media (max-width: 767px) {
-      .qr-container { grid-template-columns: repeat(2, 1fr); }
+      .qr-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
+    /* 📲 Tablet */
     @media (min-width: 768px) and (max-width: 1023px) {
-      .qr-container { grid-template-columns: repeat(4, 1fr); }
+      .qr-container {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
+    /* 💻 Desktop */
     @media (min-width: 1024px) {
-      .qr-container { grid-template-columns: repeat(6, 1fr); }
+      .qr-container {
+        grid-template-columns: repeat(6, 1fr);
+      }
     }
 
-    /* CARD */
+    /* CARD FIJA */
     .qr-card {
       background: #fff;
       border-radius: 14px;
-      padding: 14px 10px 16px;
+      padding: 14px 10px;
       text-align: center;
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      transition: transform .2s ease;
-    }
-
-    .qr-card:hover {
-      transform: translateY(-4px);
+      height: 260px; /* altura fija */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .qr-card img {
-      width: 100%;
-      max-width: 140px;
-      margin: 0 auto 10px;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
       display: block;
     }
 
     .bank-name {
       font-weight: 600;
       font-size: 14px;
-      margin-bottom: 10px;
+      margin: 8px 0;
     }
 
-    .actions button,
-    .actions a {
+    .actions a,
+    .actions button {
       width: 100%;
       padding: 7px;
-      margin-top: 6px;
       font-size: 14px;
       border-radius: 6px;
       border: none;
       cursor: pointer;
-      text-decoration: none;
-      display: block;
+      margin-top: 6px;
     }
 
     .download {
       background: #e9eef3;
-      color: #000;
     }
 
     .share {
@@ -92,7 +103,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.55);
       z-index: 1000;
       align-items: center;
       justify-content: center;
@@ -105,13 +116,6 @@
       max-width: 320px;
       border-radius: 14px;
       text-align: center;
-      animation: fadeIn .25s ease;
-    }
-
-    .modal-content h3 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 16px;
     }
 
     .modal-content a {
@@ -131,11 +135,6 @@
       cursor: pointer;
       color: #555;
     }
-
-    @keyframes fadeIn {
-      from { transform: scale(.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
   </style>
 </head>
 <body>
@@ -144,15 +143,6 @@
 
 <div class="qr-container">
 
-  <!-- CARD -->
-  <div class="qr-card">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
-    <div class="bank-name">Banco Nacional</div>
-    <div class="actions">
-      <a class="download" href="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png" download>⬇️ Descargar</a>
-      <button class="share" onclick="abrirCompartir(this)">📤 Compartir</button>
-    </div>
-  </div>
   <div class="qr-card">
     <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Commons_QR_code.png">
     <div class="bank-name">Banco Nacional</div>
@@ -210,9 +200,7 @@
     </div>
   </div>
 
-  <!-- DUPLICAR ESTA CARD HASTA 10 -->
-  <!-- Cambia solo el nombre del banco -->
-
+  <!-- DUPLICAR HASTA 10 -->
 </div>
 
 <!-- MODAL -->
@@ -221,18 +209,15 @@
     <h3>Compartir QR</h3>
     <a id="wa" target="_blank">WhatsApp</a>
     <a id="fb" target="_blank">Facebook</a>
-    <a id="tw" target="_blank">X (Twitter)</a>
+    <a id="tw" target="_blank">X</a>
     <div class="close" onclick="cerrarModal()">Cancelar</div>
   </div>
 </div>
 
 <script>
-let currentImg = '';
-
 async function abrirCompartir(btn) {
   const img = btn.closest('.qr-card').querySelector('img').src;
 
-  // 📱 MÓVIL → menú nativo
   if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
     const res = await fetch(img);
     const blob = await res.blob();
@@ -241,14 +226,10 @@ async function abrirCompartir(btn) {
     if (navigator.canShare({ files: [file] })) {
       navigator.share({
         files: [file],
-        title: 'Código QR',
-        text: 'Compartir código QR'
+        title: 'Código QR'
       });
     }
-  } 
-  // 💻 DESKTOP → MODAL
-  else {
-    currentImg = img;
+  } else {
     document.getElementById('wa').href =
       `https://wa.me/?text=${encodeURIComponent(img)}`;
     document.getElementById('fb').href =
