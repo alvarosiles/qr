@@ -2,53 +2,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Admin QR</title>
+  <title>Subir imagen</title>
 </head>
 <body>
 
-  <h1>Subir QR</h1>
+<h2>Subir imagen a Supabase</h2>
 
-  <input type="file" id="file" accept="image/*">
-  <button id="btn">Subiaaar</button>
+<input type="file" id="file">
+<button onclick="subir()">Subir todo</button>
 
-  <p id="msg"></p>
+<p id="msg"></p>
 
-  <!-- Supabase SDK (UNA SOLA VEZ) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = "https://gucdzmoacbbivgrrdyhr.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ";
 
-  <script>
-    // 🔑 conexión
-    const supabase = supabaseJs.createClient(
-      "https://gucdzmoacbbivgrrdyhr.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ"
-    );
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // ✅ función definida UNA VEZ
-    async function subir() {
-      const fileInput = document.getElementById("file");
-      const msg = document.getElementById("msg");
+  async function subir() {
+    const fileInput = document.getElementById("file");
+    const file = fileInput.files[0];
 
-      if (!fileInput.files.length) {
-        alert("Selecciona una imagen");
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const nombre = Date.now() + "_" + file.name;
-
-      const { error } = await supabase
-        .storage
-        .from("qrs")
-        .upload(nombre, file);
-
-      msg.textContent = error
-        ? "❌ Error: " + error.message
-        : "✅ Imagen subida correctamente";
+    if (!file) {
+      alert("Selecciona un archivo");
+      return;
     }
 
-    // botón
-    document.getElementById("btn").addEventListener("click", subir);
-  </script>
+    const { error } = await supabase
+      .storage
+      .from("qrs")
+      .upload("imagen.jpg", file, {
+        upsert: true
+      });
+
+    document.getElementById("msg").textContent =
+      error ? error.message : "✅ Imagen subida correctamente";
+  }
+</script>
 
 </body>
 </html>

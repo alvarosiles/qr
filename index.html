@@ -2,55 +2,28 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Códigos QR</title>
-  <style>
-    body { font-family: sans-serif; }
-    .grid { display: flex; flex-wrap: wrap; gap: 15px; }
-    img {
-      width: 200px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      background: white;
-    }
-  </style>
+  <title>Ver imagenaaaaa</title>
 </head>
 <body>
-  <h1>Códigos QR</h1>
-  <div class="grid" id="lista"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const supabase = supabaseJs.createClient(
-      "https://gucdzmoacbbivgrrdyhr.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ"
-    );
+<h2>Imagen subida</h2>
+<img id="img" width="300">
 
-    async function cargar() {
-      const { data, error } = await supabase
-        .storage
-        .from("qrs")
-        .list();
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = "https://gucdzmoacbbivgrrdyhr.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ";
 
-      if (error) {
-        console.error(error);
-        return;
-      }
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-      const div = document.getElementById("lista");
+  // cambia el nombre si subes otro archivo
+  const { data } = supabase
+    .storage
+    .from('qrs')
+    .getPublicUrl('imagen.jpg');
 
-      data.forEach(file => {
-        const url = supabase
-          .storage
-          .from("qrs")
-          .getPublicUrl(file.name).data.publicUrl;
+  document.getElementById("img").src = data.publicUrl;
+</script>
 
-        const img = document.createElement("img");
-        img.src = url;
-        div.appendChild(img);
-      });
-    }
-
-    cargar();
-  </script>
 </body>
 </html>
