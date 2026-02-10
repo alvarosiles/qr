@@ -6,34 +6,45 @@
 </head>
 <body>
 
-<h2>Subir imagen</h2>
-<input type="file" id="file">
+<h2>Subir imagen QR</h2>
+
+<input type="file" id="fileInput" accept="image/*">
+<button id="subirBtn">Subir</button>
+
+<p id="msg"></p>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-const firebaseConfig = {
-  // 👇 PEGA AQUÍ TU CONFIG
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVsftheOzhi3YUc8dIk2GP-gt7jgizBRA",
+    authDomain: "qr-personal.firebaseapp.com",
+    projectId: "qr-personal",
+    storageBucket: "qr-personal.appspot.com",
+    messagingSenderId: "626403024057",
+    appId: "1:626403024057:web:f140b3ddc6d25d67298f68"
+  };
 
-const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const storage = getStorage(app);
 
-document.getElementById("file").addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  document.getElementById("subirBtn").addEventListener("click", async () => {
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) {
+      alert("Selecciona una imagen");
+      return;
+    }
 
-  const imageRef = ref(storage, "qr/image.jpg");
-  await uploadBytes(imageRef, file);
-
-  const url = await getDownloadURL(imageRef);
-  await setDoc(doc(db, "qr", "current"), { url });
-
-  alert("Imagen actualizada ✅");
-});
+    try {
+      const storageRef = ref(storage, "qrs/" + Date.now() + "_" + file.name);
+      await uploadBytes(storageRef, file);
+      document.getElementById("msg").innerText = "✅ Imagen subida correctamente";
+    } catch (e) {
+      console.error(e);
+      document.getElementById("msg").innerText = "❌ Error al subir";
+    }
+  });
 </script>
 
 </body>
