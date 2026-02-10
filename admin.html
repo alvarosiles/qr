@@ -1,51 +1,42 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Admin QR</title>
 </head>
 <body>
+  <h1>Subir código QR</h1>
 
-<h2>Subir imagen QR</h2>
+  <input type="file" id="file" accept="image/*">
+  <button onclick="subir()">Subir</button>
 
-<input type="file" id="fileInput" accept="image/*">
-<button id="subirBtn">Subir</button>
+  <p id="msg"></p>
 
-<p id="msg"></p>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = supabaseJs.createClient(
+      "https://gucdzmoacbbivgrrdyhr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ"
+    );
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    async function subir() {
+      const file = document.getElementById("file").files[0];
+      if (!file) {
+        alert("Selecciona una imagen");
+        return;
+      }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVsftheOzhi3YUc8dIk2GP-gt7jgizBRA",
-    authDomain: "qr-personal.firebaseapp.com",
-    projectId: "qr-personal",
-    storageBucket: "qr-personal.appspot.com",
-    messagingSenderId: "626403024057",
-    appId: "1:626403024057:web:f140b3ddc6d25d67298f68"
-  };
+      const nombre = Date.now() + "_" + file.name;
 
-  const app = initializeApp(firebaseConfig);
-  const storage = getStorage(app);
+      const { error } = await supabase
+        .storage
+        .from("qrs")
+        .upload(nombre, file, { upsert: false });
 
-  document.getElementById("subirBtn").addEventListener("click", async () => {
-    const file = document.getElementById("fileInput").files[0];
-    if (!file) {
-      alert("Selecciona una imagen");
-      return;
+      document.getElementById("msg").innerText =
+        error ? "❌ Error al subir: " + error.message
+              : "✅ Imagen subida correctamente";
     }
-
-    try {
-      const storageRef = ref(storage, "qrs/" + Date.now() + "_" + file.name);
-      await uploadBytes(storageRef, file);
-      document.getElementById("msg").innerText = "✅ Imagen subida correctamente";
-    } catch (e) {
-      console.error(e);
-      document.getElementById("msg").innerText = "❌ Error al subir";
-    }
-  });
-</script>
-
+  </script>
 </body>
 </html>

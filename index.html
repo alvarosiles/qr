@@ -2,50 +2,40 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>QRs</title>
+  <title>Códigos QR</title>
   <style>
-    body { font-family: Arial; }
-    img { width: 200px; margin: 10px; }
+    body { font-family: sans-serif; }
+    .grid { display: flex; flex-wrap: wrap; gap: 15px; }
+    img {
+      width: 200px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background: white;
+    }
   </style>
 </head>
 <body>
+  <h1>Códigos QR</h1>
+  <div class="grid" id="lista"></div>
 
-<h2>Códigos QR</h2>
-<div id="lista"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = supabaseJs.createClient(
+      "https://gucdzmoacbbivgrrdyhr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ"
+    );
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    async function cargar() {
+      const { data, error } = await supabase
+        .storage
+        .from("qrs")
+        .list();
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVsftheOzhi3YUc8dIk2GP-gt7jgizBRA",
-    authDomain: "qr-personal.firebaseapp.com",
-    projectId: "qr-personal",
-    storageBucket: "qr-personal.appspot.com",
-    messagingSenderId: "626403024057",
-    appId: "1:626403024057:web:f140b3ddc6d25d67298f68"
-  };
+      if (error) {
+        console.error(error);
+        return;
+      }
 
-  const app = initializeApp(firebaseConfig);
-  const storage = getStorage(app);
+      const div = document.getElementById("lista");
 
-  const contenedor = document.getElementById("lista");
-  const carpeta = ref(storage, "qrs");
-
-  try {
-    const res = await listAll(carpeta);
-
-    for (const item of res.items) {
-      const url = await getDownloadURL(item);
-      const img = document.createElement("img");
-      img.src = url;
-      contenedor.appendChild(img);
-    }
-  } catch (e) {
-    console.error(e);
-    contenedor.innerText = "❌ Error cargando imágenes";
-  }
-</script>
-
-</body>
-</html>
+      data.forEach(file => {
