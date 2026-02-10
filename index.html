@@ -39,3 +39,18 @@
       const div = document.getElementById("lista");
 
       data.forEach(file => {
+        const url = supabase
+          .storage
+          .from("qrs")
+          .getPublicUrl(file.name).data.publicUrl;
+
+        const img = document.createElement("img");
+        img.src = url;
+        div.appendChild(img);
+      });
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
