@@ -1,28 +1,49 @@
+<!-- alvaro1234. -->
+<!-- wwW69050028@123. -->
+
+
+<!-- alvarosiles's Project -->
+<!-- wwW69050028@123. -->
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ver imagenaaaaa</title>
+  <title>Galería QR</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    img { max-width: 200px; display: block; }
+  </style>
 </head>
 <body>
 
-<h2>Imagen subida</h2>
-<img id="img" width="300">
+<h1>Galería</h1>
+<div id="galeria"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabaseUrl = "https://gucdzmoacbbivgrrdyhr.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Y2R6bW9hY2JiaXZncnJkeWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDc2NjYsImV4cCI6MjA4NjI4MzY2Nn0.ZJXYXO8DRfiEQaUDLsGiwJCNrnxTh5I6QcHOLxv3UYQ";
+  const SUPABASE_URL = "https://gucdzmoacbbivgrrdyhr.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_kh6FV9fQtuxq46CHeVHRLQ_0MHE0D2U";
 
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // cambia el nombre si subes otro archivo
-  const { data } = supabase
-    .storage
-    .from('qrs')
-    .getPublicUrl('imagen.jpg');
+  async function cargar() {
+    const { data } = await sb.from("imagenes").select("*");
 
-  document.getElementById("img").src = data.publicUrl;
+    const div = document.getElementById("galeria");
+    div.innerHTML = "";
+
+    data.forEach(img => {
+      div.innerHTML += `
+        <h3>${img.titulo}</h3>
+        <img src="${img.url}">
+      `;
+    });
+  }
+
+  cargar();
 </script>
 
 </body>
