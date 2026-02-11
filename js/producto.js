@@ -4,8 +4,10 @@ getDocs,
 deleteDoc,
 doc,
 query,
-where
+where,
+updateDoc
 } from "./firebase.js";
+
 
 import {
 colProductos,
@@ -83,30 +85,90 @@ cargarReceta();
 /* ========================
    CARGAR RECETA
 ======================== */
-async function cargarReceta(){
+// async function cargarReceta(){
+
+// const snap = await getDocs(query(
+// colRecetas,
+// where("productoId","==",productoReceta.value)
+// ));
+
+// tablaReceta.innerHTML="";
+
+// for(const r of snap.docs){
+
+// tablaReceta.innerHTML+=`
+// <tr>
+// <td>${r.data().ingredienteId}</td>
+// <td>${r.data().cantidad}</td>
+// <td><button onclick="eliminarReceta('${r.id}')">X</button></td>
+// </tr>`;
+// }
+// }
+
+ async function cargarReceta(){
 
 const snap = await getDocs(query(
 colRecetas,
 where("productoId","==",productoReceta.value)
 ));
 
+// 🔹 Traemos ingredientes
+const ingredientesSnap = await getDocs(colIngredientes);
+
+// 🔹 Creamos mapa id → nombre
+const mapaIngredientes = {};
+ingredientesSnap.forEach(i=>{
+mapaIngredientes[i.id] = i.data().nombre;
+});
+
 tablaReceta.innerHTML="";
 
 for(const r of snap.docs){
 
+const data = r.data();
+const nombreIngrediente = mapaIngredientes[data.ingredienteId] || "No encontrado";
+
 tablaReceta.innerHTML+=`
 <tr>
-<td>${r.data().ingredienteId}</td>
-<td>${r.data().cantidad}</td>
-<td><button onclick="eliminarReceta('${r.id}')">X</button></td>
+<td>${nombreIngrediente}</td>
+
+<td>
+<input type="number" 
+       value="${data.cantidad}" 
+       min="1"
+       style="width:80px"
+       id="cant-${r.id}">
+</td>
+
+<td>
+<button onclick="actualizarReceta('${r.id}')" class="btn btn-success btn-sm">💾</button>
+<button onclick="eliminarReceta('${r.id}')" class="btn btn-danger btn-sm">❌</button>
+</td>
+
 </tr>`;
 }
 }
 
-window.eliminarReceta = async(id)=>{
-await deleteDoc(doc(colRecetas,id));
+
+
+window.actualizarReceta = async(id)=>{
+
+const nuevaCantidad = Number(
+document.getElementById(`cant-${id}`).value
+);
+
+if(nuevaCantidad <= 0){
+alert("Cantidad inválida");
+return;
+}
+
+await updateDoc(doc(colRecetas,id),{
+cantidad:nuevaCantidad
+});
+
 cargarReceta();
 };
+
 
 productoReceta.addEventListener("change",cargarReceta);
 
