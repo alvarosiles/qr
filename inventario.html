@@ -1,0 +1,27 @@
+<h2>📦 Inventario</h2>
+
+<h3>➕ Registrar / Actualizar Stock</h3>
+
+<select id="almacenSelect"></select>
+<select id="ingredienteSelect"></select>
+<input id="stockInput" type="number" placeholder="Cantidad">
+<button id="guardarStock">Guardar Stock</button>
+
+<hr>
+
+<h3>📊 Stock por Almacén</h3>
+
+<select id="almacenFiltro"></select>
+
+<table border="1">
+<thead>
+<tr>
+<th>Ingrediente</th>
+<th>Stock</th>
+<th>Editar</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
+</table>
+
+<script type="module" src="./js/inventario.js"></script>
