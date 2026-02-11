@@ -7,3 +7,4 @@ export const colProductos = collection(db,"productos");
 export const colRecetas = collection(db,"recetas");
 export const colVentas = collection(db,"ventas");
 export const colKardex = collection(db,"kardex");
+export const colKardex2 = collection(db,"kardex");

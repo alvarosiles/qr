@@ -1,92 +1,172 @@
-import {
-getDocs,
-addDoc,
-updateDoc,
-doc,
-query,
-where,
-Timestamp
+ import {
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+  query,
+  where,
+  Timestamp
 } from "./firebase.js";
 
 import {
-colProductos,
-colAlmacenes,
-colInventario,
-colRecetas,
-colVentas,
-colKardex
+  colProductos,
+  colAlmacenes,
+  colInventario,
+  colRecetas,
+  colVentas,
+  colKardex
 } from "./app.js";
+
+/* =========================
+   ESPERAR DOM
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  init();
+});
 
 const almacenSelect = document.getElementById("almacen");
 const productoSelect = document.getElementById("producto");
 const cantidadInput = document.getElementById("cantidad");
+const venderBtn = document.getElementById("vender");
 
-async function cargar(){
-const alm = await getDocs(colAlmacenes);
-almacenSelect.innerHTML="";
-alm.forEach(d=>{
-almacenSelect.innerHTML+=`<option value="${d.id}">${d.data().nombre}</option>`;
-});
-
-const prod = await getDocs(colProductos);
-productoSelect.innerHTML="";
-prod.forEach(d=>{
-productoSelect.innerHTML+=`<option value="${d.id}">${d.data().nombre}</option>`;
-});
+/* =========================
+   INIT
+========================= */
+async function init() {
+  await cargarSelects();
 }
 
-document.getElementById("vender").onclick = async()=>{
+/* =========================
+   CARGAR ALMACENES Y PRODUCTOS
+========================= */
+async function cargarSelects() {
 
-const productoId = productoSelect.value;
-const almacenId = almacenSelect.value;
-const cantidadVenta = Number(cantidadInput.value);
+  const alm = await getDocs(colAlmacenes);
+  almacenSelect.innerHTML = "";
 
-const recetas = await getDocs(query(colRecetas, where("productoId","==",productoId)));
+  alm.forEach(d => {
+    almacenSelect.innerHTML += `
+      <option value="${d.id}">
+        ${d.data().nombre}
+      </option>`;
+  });
 
-for(const r of recetas.docs){
+  const prod = await getDocs(colProductos);
+  productoSelect.innerHTML = "";
 
-const receta = r.data();
-const totalNecesario = receta.cantidad * cantidadVenta;
-
-const invSnap = await getDocs(query(colInventario,
-where("ingredienteId","==",receta.ingredienteId),
-where("almacenId","==",almacenId)
-));
-
-if(invSnap.empty){
-alert("No hay inventario");
-return;
+  prod.forEach(d => {
+    productoSelect.innerHTML += `
+      <option value="${d.id}">
+        ${d.data().nombre}
+      </option>`;
+  });
 }
 
-const invDoc = invSnap.docs[0];
-const stockActual = invDoc.data().stock;
+/* =========================
+   VENDER
+========================= */
+venderBtn.onclick = async () => {
 
-if(stockActual < totalNecesario){
-alert("Stock insuficiente");
-return;
-}
+  const productoId = productoSelect.value;
+  const almacenId = almacenSelect.value;
+  const cantidadVenta = Number(cantidadInput.value);
 
-await updateDoc(doc(colInventario,invDoc.id),{
-stock: stockActual - totalNecesario
-});
+  if (!productoId || !almacenId) {
+    alert("Seleccione producto y almacén");
+    return;
+  }
 
-await addDoc(colKardex,{
-ingredienteId: receta.ingredienteId,
-almacenId,
-tipo:"SALIDA",
-cantidad: totalNecesario,
-fecha: Timestamp.now()
-});
-}
+  if (isNaN(cantidadVenta) || cantidadVenta <= 0) {
+    alert("Cantidad inválida");
+    return;
+  }
 
-await addDoc(colVentas,{
-productoId,
-cantidad:cantidadVenta,
-almacenId,
-fecha: Timestamp.now()
-});
+  // 🔥 Obtener receta del producto
+  const recetasSnap = await getDocs(
+    query(colRecetas, where("productoId", "==", productoId))
+  );
 
-alert("Venta realizada");
+  if (recetasSnap.empty) {
+    alert("Este producto no tiene receta configurada");
+    return;
+  }
+
+  /* =========================
+     1️⃣ VALIDAR STOCK PRIMERO
+  ========================= */
+
+  const movimientos = [];
+
+  for (const r of recetasSnap.docs) {
+
+    const receta = r.data();
+    const totalNecesario = receta.cantidad * cantidadVenta;
+
+    const invSnap = await getDocs(
+      query(
+        colInventario,
+        where("ingredienteId", "==", receta.ingredienteId),
+        where("almacenId", "==", almacenId)
+      )
+    );
+
+    if (invSnap.empty) {
+      alert("No existe inventario para un ingrediente");
+      return;
+    }
+
+    const invDoc = invSnap.docs[0];
+    const stockActual = invDoc.data().stock;
+
+    if (stockActual < totalNecesario) {
+      alert("Stock insuficiente para completar la venta");
+      return;
+    }
+
+    movimientos.push({
+      inventarioId: invDoc.id,
+      ingredienteId: receta.ingredienteId,
+      stockActual,
+      totalNecesario
+    });
+  }
+
+  /* =========================
+     2️⃣ DESCONTAR STOCK
+  ========================= */
+
+  for (const mov of movimientos) {
+
+    const stockNuevo = mov.stockActual - mov.totalNecesario;
+
+    await updateDoc(doc(colInventario, mov.inventarioId), {
+      stock: stockNuevo
+    });
+
+    await addDoc(colKardex, {
+      ingredienteId: mov.ingredienteId,
+      almacenId,
+      tipo: "venta",
+      cantidad: mov.totalNecesario,
+      stockAnterior: mov.stockActual,
+      stockNuevo: stockNuevo,
+      fecha: Timestamp.now(),
+      referencia: productoId
+    });
+  }
+
+  /* =========================
+     3️⃣ REGISTRAR VENTA
+  ========================= */
+
+  await addDoc(colVentas, {
+    productoId,
+    cantidad: cantidadVenta,
+    almacenId,
+    fecha: Timestamp.now()
+  });
+
+  cantidadInput.value = "";
+
+  alert("Venta realizada correctamente");
 };
-
-cargar();

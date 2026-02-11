@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Kardex</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;margin:20px}
+select{padding:6px;margin-bottom:15px}
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+th,td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+th{
+background:#2ecc71;
+color:white;
+}
+.tipo-inicial{background:#3498db;color:white}
+.tipo-ingreso{background:#2ecc71;color:white}
+.tipo-baja{background:#e67e22;color:white}
+.tipo-venta{background:#e74c3c;color:white}
+</style>
+</head>
+<body>
+
+<h2>📊 Kardex</h2>
+
+<select id="almacenFiltro"></select>
+
+<table>
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Ingrediente</th>
+<th>Tipo</th>
+<th>Cantidad</th>
+<th>Stock Anterior</th>
+<th>Stock Nuevo</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
+</table>
+
+<!-- <script type="module" src="kardex2.js"></script> -->
+<script type="module" src="js/kardex2.js"></script>
+
+</body>
+</html>
