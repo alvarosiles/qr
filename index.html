@@ -1,60 +1,249 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Sistema Restaurante</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema</title>
+
 <style>
-body{font-family:Arial;margin:0;background:#f4f6f9}
-nav{background:#111;padding:15px;display:flex;gap:10px}
-nav a{
-color:white;
-text-decoration:none;
-padding:8px 15px;
-border-radius:5px;
-background:#333;
+body{
+    margin:0;
+    font-family: Segoe UI, Arial, sans-serif;
+    background:#f5f5f5;
 }
-nav a.active{background:#2ecc71}
-iframe{
-width:100%;
-height:calc(100vh - 60px);
-border:none;
+
+/* ====== BARRA SUPERIOR ====== */
+.topbar{
+    background:#243b5a;
+    color:white;
+    padding:10px 15px;
+    font-weight:bold;
+}
+
+/* ====== SUB MENU ====== */
+.submenu{
+    background:#dcdcdc;
+    display:flex;
+    padding-left:10px;
+    border-bottom:1px solid #bdbdbd;
+}
+
+.submenu div{
+    padding:10px 18px;
+    cursor:pointer;
+}
+
+.submenu div:hover{
+    background:#c5c5c5;
+}
+
+.submenu .activo{
+    background:#4a90e2;
+    color:white;
+}
+
+/* ====== MENU ICONOS ====== */
+.iconos{
+    background:#e8e8e8;
+    padding:15px;
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    border-bottom:1px solid #ccc;
+}
+
+.boton{
+    width:90px;
+    height:80px;
+    background:white;
+    border:1px solid #bdbdbd;
+    border-radius:5px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:0.2s;
+    font-size:13px;
+}
+
+.boton:hover{
+    background:#4a90e2;
+    color:white;
+}
+
+.boton span{
+    font-size:28px;
+}
+
+/* ====== CONTENIDO ====== */
+.contenido{
+    padding:30px;
+    background:white;
+    min-height:300px;
+}
+
+.vista{
+    display:none;
+}
+
+.vista.activa{
+    display:block;
 }
 </style>
 </head>
 <body>
 
-<nav>
-<a href="#" data-page="punto_venta.html" class="active">🧾 Ventas</a>
-<a href="#" data-page="producto.html">🍔 Productos</a>
-<a href="#" data-page="ingrediente.html">🥬 Ingredientes</a>
-<a href="#" data-page="inventario.html">📦 Inventario</a>
-<a href="#" data-page="almacen.html">🏬 Almacén</a>
+<!-- Barra azul -->
+<div class="topbar">
+    ▾ Principal
+</div>
 
-<a href="#" data-page="dashboard.html">🏬 dashboard</a>
-<a href="#" data-page="kardex.html">🏬 kardex</a>
-<a href="#" data-page="kardex2.html">🏬 kardex</a>
+<!-- Sub menú -->
+<div class="submenu">
+    <div class="activo">Archivos</div>
+    <div>Parámetros</div>
+    <div>Comercial</div>
+    <div>Inventarios</div>
+    <div>Ventanas</div>
+    <div>Acerca de ...</div>
+</div>
 
-</nav>
+<!-- Iconos principales -->
+<div class="iconos">
 
-<iframe id="frame" src="punto_venta.html"></iframe>
+    <div class="boton" onclick="mostrarVista('seguimiento')">
+        <span>📦</span>
+        Seguimiento
+    </div>
 
-<div style="text-align:center; padding:20px;">
-  <img 
-    src="https://drive.google.com/uc?export=view&id=1BQdeRWw8xgBHKkebAnVp2QjRjvbt_F6G" 
-    style="max-width:400px; width:100%; border-radius:10px;">
+    <div class="boton" onclick="mostrarVista('compras')">
+        <span>🛒</span>
+        Compras
+    </div>
+
+    <div class="boton" onclick="mostrarVista('proforma')">
+        <span>📄</span>
+        Proforma
+    </div>
+
+    <div class="boton" onclick="mostrarVista('ventas')">
+        <span>✔️</span>
+        Ventas
+    </div>
+
+    <div class="boton" onclick="mostrarVista('cajero')">
+        <span>💰</span>
+        Cajero
+    </div>
+
+    <div class="boton" onclick="mostrarVista('caja')">
+        <span>🏦</span>
+        Caja
+    </div>
+
+    <div class="boton" onclick="mostrarVista('tc')">
+        <span>🔄</span>
+        T/C
+    </div>
+
+    <div class="boton" onclick="mostrarVista('inventario')">
+        <span>📊</span>
+        Inventario
+    </div>
+
+    <div class="boton" onclick="mostrarVista('valorado')">
+        <span>📈</span>
+        Valorado
+    </div>
+
+    <div class="boton" onclick="mostrarVista('reportes')">
+        <span>📋</span>
+        Reportes
+    </div>
+
+    <div class="boton" onclick="mostrarVista('buscar')">
+        <span>🔍</span>
+        Buscar
+    </div>
+
+    <div class="boton" onclick="mostrarVista('etiqueta')">
+        <span>🏷️</span>
+        Etiqueta
+    </div>
+
+    <div class="boton" onclick="mostrarVista('salir')">
+        <span>↗</span>
+        Salir
+    </div>
+
+</div>
+
+<!-- CONTENIDO -->
+<div class="contenido">
+
+    <div id="seguimiento" class="vista activa">
+        <h2>Vista Seguimiento</h2>
+    </div>
+
+    <div id="compras" class="vista">
+        <h2>Vista Compras</h2>
+    </div>
+
+    <div id="proforma" class="vista">
+        <h2>Vista Proforma</h2>
+    </div>
+
+    <div id="ventas" class="vista">
+        <h2>Vista Ventas</h2>
+    </div>
+
+    <div id="cajero" class="vista">
+        <h2>Vista Cajero</h2>
+    </div>
+
+    <div id="caja" class="vista">
+        <h2>Vista Caja</h2>
+    </div>
+
+    <div id="tc" class="vista">
+        <h2>Vista Tipo de Cambio</h2>
+    </div>
+
+    <div id="inventario" class="vista">
+        <h2>Vista Inventario</h2>
+    </div>
+
+    <div id="valorado" class="vista">
+        <h2>Vista Valorado</h2>
+    </div>
+
+    <div id="reportes" class="vista">
+        <h2>Vista Reportes</h2>
+    </div>
+
+    <div id="buscar" class="vista">
+        <h2>Vista Buscar</h2>
+    </div>
+
+    <div id="etiqueta" class="vista">
+        <h2>Vista Etiqueta</h2>
+    </div>
+
+    <div id="salir" class="vista">
+        <h2>Salir del Sistema</h2>
+    </div>
+
 </div>
 
 <script>
-const links = document.querySelectorAll("nav a");
-const frame = document.getElementById("frame");
+function mostrarVista(id){
+    document.querySelectorAll(".vista").forEach(v=>{
+        v.classList.remove("activa");
+    });
 
-links.forEach(link=>{
-link.onclick = ()=>{
-links.forEach(l=>l.classList.remove("active"));
-link.classList.add("active");
-frame.src = link.dataset.page;
-};
-});
+    document.getElementById(id).classList.add("activa");
+}
 </script>
 
 </body>
