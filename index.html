@@ -1,250 +1,271 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Payment Manager</title>
+  <meta name="description" content="Gestiona, muestra y comparte tus codigos QR de pago de forma rapida.">
 
-<style>
-body{
-    margin:0;
-    font-family: Segoe UI, Arial, sans-serif;
-    background:#f5f5f5;
-}
-
-/* ====== BARRA SUPERIOR ====== */
-.topbar{
-    background:#243b5a;
-    color:white;
-    padding:10px 15px;
-    font-weight:bold;
-}
-
-/* ====== SUB MENU ====== */
-.submenu{
-    background:#dcdcdc;
-    display:flex;
-    padding-left:10px;
-    border-bottom:1px solid #bdbdbd;
-}
-
-.submenu div{
-    padding:10px 18px;
-    cursor:pointer;
-}
-
-.submenu div:hover{
-    background:#c5c5c5;
-}
-
-.submenu .activo{
-    background:#4a90e2;
-    color:white;
-}
-
-/* ====== MENU ICONOS ====== */
-.iconos{
-    background:#e8e8e8;
-    padding:15px;
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
-    border-bottom:1px solid #ccc;
-}
-
-.boton{
-    width:90px;
-    height:80px;
-    background:white;
-    border:1px solid #bdbdbd;
-    border-radius:5px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    transition:0.2s;
-    font-size:13px;
-}
-
-.boton:hover{
-    background:#4a90e2;
-    color:white;
-}
-
-.boton span{
-    font-size:28px;
-}
-
-/* ====== CONTENIDO ====== */
-.contenido{
-    padding:30px;
-    background:white;
-    min-height:300px;
-}
-
-.vista{
-    display:none;
-}
-
-.vista.activa{
-    display:block;
-}
-</style>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Barra azul -->
-<div class="topbar">
-    ▾ Principal
-</div>
+  <!-- ===================== LOADING ===================== -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="spinner"></div>
+    <p>Cargando QR Payment Manager...</p>
+  </div>
 
-<!-- Sub menú -->
-<div class="submenu">
-    <div class="activo">Archivos</div>
-    <div>Parámetros</div>
-    <div>Comercial</div>
-    <div>Inventarios</div>
-    <div>Ventanas</div>
-    <div>Acerca de ...</div>
-</div>
+  <div class="app">
 
-<!-- Iconos principales -->
-<div class="iconos">
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/logo.svg" alt="Logo" class="brand-logo">
+        <span>QR Manager</span>
+      </div>
 
-    <div class="boton" onclick="mostrarVista('seguimiento')">
-        <span>📦</span>
-        Seguimiento
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="inicio">
+          <i class="fa-solid fa-house"></i> <span>Inicio</span>
+        </button>
+        <button class="nav-item" data-view="misqr">
+          <i class="fa-solid fa-credit-card"></i> <span>Mis QR</span>
+        </button>
+        <button class="nav-item" data-view="agregar">
+          <i class="fa-solid fa-plus"></i> <span>Agregar QR</span>
+        </button>
+        <button class="nav-item" data-view="categorias">
+          <i class="fa-solid fa-folder"></i> <span>Categorías</span>
+        </button>
+        <button class="nav-item" data-view="configuracion">
+          <i class="fa-solid fa-gear"></i> <span>Configuración</span>
+        </button>
+        <button class="nav-item" data-view="info">
+          <i class="fa-solid fa-circle-info"></i> <span>Información</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- ===================== OVERLAY (mobile sidebar) ===================== -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ===================== MAIN ===================== -->
+    <div class="main">
+
+      <header class="topbar">
+        <button class="icon-btn" id="menu-toggle" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h1 class="topbar-title">📱 QR Payment Manager</h1>
+      </header>
+
+      <div class="content">
+
+        <!-- ===================== VISTA: INICIO ===================== -->
+        <section id="view-inicio" class="view active">
+          <h2 class="view-title">Dashboard</h2>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-qrcode"></i></div>
+              <div>
+                <p class="stat-label">QR registrados</p>
+                <p class="stat-value" id="stat-total">0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+              <div>
+                <p class="stat-label">Categorías</p>
+                <p class="stat-value" id="stat-categorias">0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <div>
+                <p class="stat-label">Último QR utilizado</p>
+                <p class="stat-value stat-value-text" id="stat-ultimo">—</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-actions">
+              <p class="stat-label">Acciones rápidas</p>
+              <div class="quick-actions">
+                <button class="btn btn-primary btn-sm" id="quick-add"><i class="fa-solid fa-plus"></i> Agregar QR</button>
+                <button class="btn btn-secondary btn-sm" id="quick-view"><i class="fa-solid fa-eye"></i> Ver mis QR</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="section-subtitle">QR recientes</h3>
+          <div class="qr-grid" id="recent-grid"></div>
+        </section>
+
+        <!-- ===================== VISTA: MIS QR ===================== -->
+        <section id="view-misqr" class="view">
+          <h2 class="view-title">Mis QR</h2>
+
+          <div class="toolbar">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="search-input" placeholder="Buscar QR por nombre...">
+            </div>
+
+            <select id="filter-type" class="select">
+              <option value="">Todas las categorías</option>
+            </select>
+
+            <select id="sort-select" class="select">
+              <option value="order">Orden</option>
+              <option value="name">Nombre (A-Z)</option>
+              <option value="type">Tipo</option>
+            </select>
+          </div>
+
+          <div class="qr-grid" id="qr-grid"></div>
+          <p class="empty-state" id="qr-empty" hidden>No se encontraron códigos QR.</p>
+        </section>
+
+        <!-- ===================== VISTA: AGREGAR QR ===================== -->
+        <section id="view-agregar" class="view">
+          <h2 class="view-title">Agregar QR</h2>
+
+          <form id="qr-form" class="card form-card">
+            <input type="hidden" id="f-id">
+
+            <div class="form-group">
+              <label for="f-name">Nombre del pago</label>
+              <input type="text" id="f-name" placeholder="Ej: Banco Principal" required>
+            </div>
+
+            <div class="form-group">
+              <label for="f-type">Tipo</label>
+              <select id="f-type" required>
+                <option value="Banco">Banco</option>
+                <option value="Billetera Digital">Billetera Digital</option>
+                <option value="Pago móvil">Pago móvil</option>
+                <option value="Criptomoneda">Criptomoneda</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="f-description">Descripción</label>
+              <textarea id="f-description" rows="3" placeholder="Descripción breve del método de pago"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="f-image">Imagen QR (.png, .jpg, .svg)</label>
+              <input type="file" id="f-image" accept=".png,.jpg,.jpeg,.svg">
+              <img id="f-image-preview" class="image-preview" hidden alt="Vista previa">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="f-color">Color</label>
+                <input type="color" id="f-color" value="#2563EB">
+              </div>
+
+              <div class="form-group">
+                <label for="f-status">Estado</label>
+                <select id="f-status">
+                  <option value="active">Activo</option>
+                  <option value="inactive">Inactivo</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="f-order">Orden de visualización</label>
+                <input type="number" id="f-order" min="1" value="1">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="form-cancel">Cancelar</button>
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar QR</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ===================== VISTA: CATEGORÍAS ===================== -->
+        <section id="view-categorias" class="view">
+          <h2 class="view-title">Categorías</h2>
+          <div class="categories-grid" id="categories-grid"></div>
+        </section>
+
+        <!-- ===================== VISTA: CONFIGURACIÓN ===================== -->
+        <section id="view-configuracion" class="view">
+          <h2 class="view-title">Configuración</h2>
+
+          <div class="card settings-card">
+            <h3>Datos</h3>
+            <p class="muted">Tus códigos QR se guardan localmente en este navegador usando LocalStorage.</p>
+
+            <div class="form-actions form-actions-left">
+              <button class="btn btn-secondary" id="btn-export"><i class="fa-solid fa-download"></i> Exportar JSON</button>
+
+              <label class="btn btn-secondary" for="import-file">
+                <i class="fa-solid fa-upload"></i> Importar JSON
+              </label>
+              <input type="file" id="import-file" accept="application/json" hidden>
+
+              <button class="btn btn-danger" id="btn-reset"><i class="fa-solid fa-trash"></i> Restablecer datos</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== VISTA: INFORMACIÓN ===================== -->
+        <section id="view-info" class="view">
+          <h2 class="view-title">Información</h2>
+          <div class="card">
+            <h3>📱 QR Payment Manager</h3>
+            <p class="muted">Aplicación web estática para organizar, mostrar y compartir códigos QR de pago.</p>
+            <ul class="info-list">
+              <li>Versión: 1.0.0</li>
+              <li>Tecnologías: HTML5, CSS3, JavaScript ES6, JSON, LocalStorage</li>
+              <li>Sin backend, sin frameworks.</li>
+              <li>Dominio: qr.alvarosiles.cloud</li>
+            </ul>
+          </div>
+        </section>
+
+      </div>
     </div>
+  </div>
 
-    <div class="boton" onclick="mostrarVista('compras')">
-        <span>🛒</span>
-        Compras
+  <!-- ===================== MODAL: VER QR ===================== -->
+  <div class="modal" id="qr-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+      <img id="modal-img" src="" alt="QR">
+      <h3 id="modal-name"></h3>
+      <p id="modal-type" class="badge"></p>
+      <p id="modal-desc" class="muted"></p>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modal-download"><i class="fa-solid fa-download"></i> Descargar</button>
+        <button class="btn btn-secondary" id="modal-copy"><i class="fa-solid fa-copy"></i> Copiar información</button>
+        <button class="btn btn-primary" id="modal-client"><i class="fa-solid fa-expand"></i> Mostrar al Cliente</button>
+      </div>
     </div>
+  </div>
 
-    <div class="boton" onclick="mostrarVista('proforma')">
-        <span>📄</span>
-        Proforma
-    </div>
+  <!-- ===================== VISTA CLIENTE (pantalla completa) ===================== -->
+  <div class="client-view" id="client-view">
+    <button class="client-close" id="client-close" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+    <img id="client-img" src="" alt="QR">
+    <h2 id="client-name"></h2>
+    <p id="client-info"></p>
+  </div>
 
-    <div class="boton" onclick="mostrarVista('ventas')">
-        <span>✔️</span>
-        Ventas
-    </div>
+  <!-- ===================== TOASTS ===================== -->
+  <div class="toast-container" id="toast-container"></div>
 
-    <div class="boton" onclick="mostrarVista('cajero')">
-        <span>💰</span>
-        Cajero
-    </div>
-
-    <div class="boton" onclick="mostrarVista('caja')">
-        <span>🏦</span>
-        Caja
-    </div>
-
-    <div class="boton" onclick="mostrarVista('tc')">
-        <span>🔄</span>
-        T/C
-    </div>
-
-    <div class="boton" onclick="mostrarVista('inventario')">
-        <span>📊</span>
-        Inventario
-    </div>
-
-    <div class="boton" onclick="mostrarVista('valorado')">
-        <span>📈</span>
-        Valorado
-    </div>
-
-    <div class="boton" onclick="mostrarVista('reportes')">
-        <span>📋</span>
-        Reportes
-    </div>
-
-    <div class="boton" onclick="mostrarVista('buscar')">
-        <span>🔍</span>
-        Buscar
-    </div>
-
-    <div class="boton" onclick="mostrarVista('etiqueta')">
-        <span>🏷️</span>
-        Etiqueta
-    </div>
-
-    <div class="boton" onclick="mostrarVista('salir')">
-        <span>↗</span>
-        Salir
-    </div>
-
-</div>
-
-<!-- CONTENIDO -->
-<div class="contenido">
-
-    <div id="seguimiento" class="vista activa">
-        <h2>Vista Seguimiento</h2>
-    </div>
-
-    <div id="compras" class="vista">
-        <h2>Vista Compras</h2>
-    </div>
-
-    <div id="proforma" class="vista">
-        <h2>Vista Proforma</h2>
-    </div>
-
-    <div id="ventas" class="vista">
-        <h2>Vista Ventas</h2>
-    </div>
-
-    <div id="cajero" class="vista">
-        <h2>Vista Cajero</h2>
-    </div>
-
-    <div id="caja" class="vista">
-        <h2>Vista Caja</h2>
-    </div>
-
-    <div id="tc" class="vista">
-        <h2>Vista Tipo de Cambio</h2>
-    </div>
-
-    <div id="inventario" class="vista">
-        <h2>Vista Inventario</h2>
-    </div>
-
-    <div id="valorado" class="vista">
-        <h2>Vista Valorado</h2>
-    </div>
-
-    <div id="reportes" class="vista">
-        <h2>Vista Reportes</h2>
-    </div>
-
-    <div id="buscar" class="vista">
-        <h2>Vista Buscar</h2>
-    </div>
-
-    <div id="etiqueta" class="vista">
-        <h2>Vista Etiqueta</h2>
-    </div>
-
-    <div id="salir" class="vista">
-        <h2>Salir del Sistema</h2>
-    </div>
-
-</div>
-
-<script>
-function mostrarVista(id){
-    document.querySelectorAll(".vista").forEach(v=>{
-        v.classList.remove("activa");
-    });
-
-    document.getElementById(id).classList.add("activa");
-}
-</script>
-
+  <script src="app.js" type="module"></script>
 </body>
 </html>

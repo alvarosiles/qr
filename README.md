@@ -1,372 +1,126 @@
-Actúa como un desarrollador Senior especializado en HTML5, CSS3, JavaScript ES6, diseño UX/UI y aplicaciones web modernas.
+# 📱 QR Payment Manager
 
-Quiero crear una aplicación web llamada **QR**.
+Aplicación web estática para organizar, mostrar y compartir códigos QR de pago de forma rápida. Pensada para negocios que necesitan mostrarle un QR de cobro a un cliente en segundos, desde una PC, tablet o celular.
 
-URL del proyecto:
+Sitio: [qr.alvarosiles.cloud](https://qr.alvarosiles.cloud)
 
-qr.alvarosiles.cloud
+## Características
 
-Objetivo:
+- Dashboard con resumen de QR registrados, categorías y último QR utilizado.
+- Gestión de QR: agregar, editar y eliminar códigos con nombre, tipo, descripción, color, estado y orden.
+- Búsqueda por nombre y filtro por categoría.
+- Orden configurable (por orden manual, nombre o tipo).
+- Vista de tarjetas con imagen, acciones rápidas (mostrar, descargar, editar, eliminar).
+- **Modo cliente**: pantalla limpia y a pantalla completa para mostrarle el QR al cliente.
+- Copiar información del QR al portapapeles.
+- Exportar / importar los datos en formato JSON, y restablecer a los datos originales.
+- Todo se guarda en el navegador con `LocalStorage`, sin backend ni servidor.
+- Diseño oscuro, responsive (PC, tablet y móvil), con animaciones suaves.
 
-Crear una aplicación web para gestionar, mostrar y compartir códigos QR de pago de forma rápida para clientes.
+## Tecnologías
 
-La aplicación debe permitir organizar mis códigos QR dentro de una carpeta, mostrarlos en pantalla, descargarlos y abrirlos rápidamente cuando un cliente necesite realizar un pago.
+Solo tecnologías nativas del navegador, sin frameworks ni backend:
 
----
+- HTML5
+- CSS3
+- JavaScript ES6 (módulo nativo)
+- JSON
+- LocalStorage
+- Font Awesome (iconos, vía CDN)
 
-# Tecnologías
+## Estructura del proyecto
 
-Utilizar únicamente:
-
-* HTML5
-* CSS3
-* JavaScript ES6
-* JSON
-* LocalStorage
-
-No utilizar frameworks.
-
-No utilizar backend.
-
-Debe funcionar como una aplicación web estática.
-
----
-
-# Diseño
-
-Crear un diseño moderno y profesional tipo aplicación de pagos.
-
-Inspiración:
-
-* Billeteras digitales
-* Aplicaciones bancarias
-* Dashboard modernos
-
-Estilo:
-
-Modo oscuro elegante.
-
-Colores:
-
-Fondo:
-#111827
-
-Tarjetas:
-#1F2937
-
-Color principal:
-#2563EB
-
-Éxito:
-#10B981
-
-Texto:
-#FFFFFF
-
-Bordes redondeados:
-
-12px
-
-Sombras suaves.
-
-Responsive para:
-
-* PC
-* Tablet
-* Móvil
-
----
-
-# Interfaz principal
-
-Crear un Dashboard:
-
-Título:
-
-📱 QR Payment Manager
-
-Mostrar tarjetas:
-
-Cantidad de QR registrados
-
-Categorías
-
-Último QR utilizado
-
-Acciones rápidas
-
----
-
-# Menú
-
-Crear un menú lateral:
-
-🏠 Inicio
-
-💳 Mis QR
-
-➕ Agregar QR
-
-📁 Categorías
-
-⚙ Configuración
-
-ℹ Información
-
----
-
-# Gestión de QR
-
-Crear un formulario para registrar códigos QR.
-
-Campos:
-
-Nombre del pago
-
-Ejemplo:
-
-Banco Principal
-
-Tipo:
-
-* Banco
-* Billetera Digital
-* Pago móvil
-* Criptomoneda
-* Otro
-
-Descripción
-
-Imagen QR
-
-Archivo:
-
-.png
-.jpg
-.svg
-
-Color
-
-Estado:
-
-Activo
-Inactivo
-
-Orden de visualización
-
----
-
-# Carpeta QR
-
-Crear una estructura:
-
+```
 qr/
-
-banco.png
-
-paypal.png
-
-billetera.png
-
-otros.png
-
-La aplicación debe cargar automáticamente las imágenes desde esta carpeta.
-
----
-
-# Archivo JSON
-
-Crear:
-
-data/qr.json
-
-Ejemplo:
-
-{
-"qrPayments":[
-{
-"id":1,
-"name":"Banco Principal",
-"type":"Banco",
-"description":"Cuenta principal",
-"image":"qr/banco.png",
-"status":"active"
-},
-{
-"id":2,
-"name":"Pago Digital",
-"type":"Billetera",
-"description":"Pago móvil",
-"image":"qr/pago.png",
-"status":"active"
-}
-]
-}
-
----
-
-# Vista de tarjetas QR
-
-Cada QR debe mostrarse como una tarjeta:
-
-Ejemplo:
-
----
-
-💳 Banco Principal
-
-[ Imagen QR ]
-
-Banco
-
-Cuenta principal
-
-Botones:
-
-👁 Mostrar
-
-⬇ Descargar
-
-📋 Copiar información
-
----
-
----
-
-# Modo cliente
-
-Crear un botón:
-
-"Mostrar al Cliente"
-
-Debe abrir una vista limpia:
-
-* QR grande
-* Nombre del pago
-* Información
-* Botón cerrar
-
-Ideal para mostrar en una pantalla o celular.
-
----
-
-# Funciones
-
-Implementar:
-
-✔ Cargar QR desde JSON
-
-✔ Buscar QR
-
-✔ Filtrar por categoría
-
-✔ Mostrar QR grande
-
-✔ Descargar imagen
-
-✔ Vista pantalla completa
-
-✔ Copiar información
-
-✔ Ordenar tarjetas
-
-✔ Guardar configuración con LocalStorage
-
----
-
-# Diseño adicional
-
-Agregar:
-
-Animaciones suaves.
-
-Hover en tarjetas.
-
-Iconos usando Font Awesome.
-
-Loading mientras carga información.
-
-Mensajes de éxito:
-
-"QR descargado correctamente"
-
----
-
-# Estructura del proyecto
-
-Crear:
-
-qr/
-
-│
-├── index.html
-├── style.css
-├── app.js
-│
+├── index.html          # Estructura de la app (dashboard, menú, formularios, modales)
+├── style.css            # Estilos (tema oscuro, responsive)
+├── app.js                # Lógica de la aplicación (ES6)
 ├── data/
-│   └── qr.json
-│
-├── qr/
-│   ├── banco.png
-│   ├── pago.png
-│   └── otros.png
-│
+│   └── qr.json           # Datos semilla de códigos QR
+├── qr/                   # Imágenes de los códigos QR
+│   ├── banco.svg
+│   ├── billetera.svg
+│   ├── pago.svg
+│   └── otros.svg
 ├── assets/
-│   ├── icons/
-│   └── logo.png
-│
+│   └── logo.svg          # Logo de la aplicación
 ├── README.md
 ├── LICENSE
 └── .gitignore
+```
 
----
+## Instalación
 
-# Calidad del código
+No requiere instalación de dependencias. Al ser una app estática, solo necesitas los archivos y un servidor HTTP (por `fetch` de `data/qr.json`, abrir `index.html` directamente con `file://` no funciona en todos los navegadores).
 
-El código debe ser:
+Clona el repositorio:
 
-* Profesional
-* Limpio
-* Modular
-* Comentado
-* Fácil de ampliar
+```bash
+git clone https://github.com/<tu-usuario>/qr.git
+cd qr
+```
 
-Seguir buenas prácticas JavaScript.
+Levanta un servidor local, por ejemplo con Python:
 
-No repetir código.
+```bash
+python -m http.server 8080
+```
 
----
+O con la extensión "Live Server" de VS Code. Luego abre `http://localhost:8080`.
 
-# README.md
+## Uso
 
-Crear documentación:
+1. La primera vez que abres la app, se cargan los QR de ejemplo desde `data/qr.json`.
+2. Desde el menú lateral puedes navegar entre **Inicio**, **Mis QR**, **Agregar QR**, **Categorías**, **Configuración** e **Información**.
+3. En **Mis QR** puedes buscar, filtrar por categoría y ordenar tus códigos.
+4. Cada tarjeta permite: mostrar el QR en grande, descargarlo, editarlo o eliminarlo.
+5. Dentro de la vista de un QR, el botón **"Mostrar al Cliente"** abre una pantalla completa y limpia, ideal para que el cliente escanee el código.
+6. En **Configuración** puedes exportar tus datos a un archivo `qr.json`, importar uno existente, o restablecer la app a los datos originales.
 
-* Descripción del proyecto
-* Características
-* Instalación
-* Uso
-* Estructura
-* Cómo agregar nuevos QR
-* Cómo publicar en GitHub Pages
-* Cómo conectar el dominio qr.alvarosiles.cloud
+Todos los cambios (agregar, editar, eliminar) se guardan automáticamente en `LocalStorage` del navegador.
 
----
+## Cómo agregar nuevos QR
 
-# Entrega
+**Desde la app (recomendado):**
 
-Genera el proyecto archivo por archivo.
+Ve a **➕ Agregar QR**, completa el formulario (nombre, tipo, descripción, imagen, color, estado y orden) y guarda. La imagen se almacena directamente en `LocalStorage`.
 
-Primero crea:
+**Editando los datos semilla:**
 
-1. Estructura del proyecto
-2. index.html
-3. style.css
-4. app.js
-5. data/qr.json
-6. README.md
+Agrega la imagen del QR dentro de la carpeta `qr/` y añade una entrada en `data/qr.json`:
 
-Explica cada archivo antes de mostrar el código.
+```json
+{
+  "id": 5,
+  "name": "Nuevo Pago",
+  "type": "Banco",
+  "description": "Descripción del método de pago",
+  "image": "qr/nuevo.png",
+  "color": "#2563EB",
+  "status": "active",
+  "order": 5
+}
+```
 
-No resumas.
+> Nota: `data/qr.json` solo se usa para la carga inicial. Si ya existen datos en `LocalStorage`, puedes restablecerlos desde **Configuración → Restablecer datos** para volver a leer el JSON.
 
-Espera mi confirmación antes de continuar con el siguiente archivo.
+## Cómo publicar en GitHub Pages
+
+1. Sube el proyecto a un repositorio de GitHub.
+2. Entra a **Settings → Pages**.
+3. En **Source**, selecciona la rama `main` (o `dev`) y la carpeta `/ (root)`.
+4. Guarda los cambios. GitHub publicará el sitio en `https://<tu-usuario>.github.io/<repositorio>/`.
+
+## Cómo conectar el dominio qr.alvarosiles.cloud
+
+1. En el repositorio, crea un archivo `CNAME` en la raíz con el contenido:
+   ```
+   qr.alvarosiles.cloud
+   ```
+2. En tu proveedor de DNS, crea un registro `CNAME` para el subdominio `qr` apuntando a `<tu-usuario>.github.io`.
+3. En **Settings → Pages** de GitHub, escribe `qr.alvarosiles.cloud` como **Custom domain** y espera a que se verifique el DNS.
+4. Activa **Enforce HTTPS** una vez que el certificado esté disponible.
+
+## Licencia
+
+Distribuido bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más información.

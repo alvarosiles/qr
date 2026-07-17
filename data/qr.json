@@ -1,0 +1,44 @@
+{
+  "qrPayments": [
+    {
+      "id": 1,
+      "name": "Banco Principal",
+      "type": "Banco",
+      "description": "Cuenta principal para transferencias y depositos.",
+      "image": "qr/banco.svg",
+      "color": "#2563EB",
+      "status": "active",
+      "order": 1
+    },
+    {
+      "id": 2,
+      "name": "Billetera Digital",
+      "type": "Billetera Digital",
+      "description": "Pagos rapidos desde billetera digital.",
+      "image": "qr/billetera.svg",
+      "color": "#10B981",
+      "status": "active",
+      "order": 2
+    },
+    {
+      "id": 3,
+      "name": "Pago Movil",
+      "type": "Pago móvil",
+      "description": "Cobro instantaneo desde celular.",
+      "image": "qr/pago.svg",
+      "color": "#2563EB",
+      "status": "active",
+      "order": 3
+    },
+    {
+      "id": 4,
+      "name": "Otros Pagos",
+      "type": "Otro",
+      "description": "Codigo QR de respaldo para otros metodos de pago.",
+      "image": "qr/otros.svg",
+      "color": "#6B7280",
+      "status": "inactive",
+      "order": 4
+    }
+  ]
+}

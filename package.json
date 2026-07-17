@@ -1,0 +1,12 @@
+{
+  "name": "qr",
+  "version": "1.0.0",
+  "description": "Aplicación web estática para organizar, mostrar y compartir códigos QR de pago de forma rápida. Pensada para negocios que necesitan mostrarle un QR de cobro a un cliente en segundos, desde una PC, tablet o celular.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
