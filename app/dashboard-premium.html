@@ -24,6 +24,11 @@
     --glow:0 0 0 1px rgba(16,215,200,.15), 0 0 30px rgba(16,215,200,.15);
     --surface-2:rgba(255,255,255,.03);
     --surface-3:rgba(255,255,255,.06);
+    --sb-bg:#081F2B;
+    --sb-bg-2:#0B2A38;
+    --sb-text:#FFFFFF;
+    --sb-text-secondary:#8FA7B2;
+    --sb-border:rgba(255,255,255,.07);
     --radius:20px;
     --transition:.25s ease;
     --sidebar-w:264px;
@@ -32,17 +37,29 @@
   }
 
   [data-theme="light"]{
-    --bg:#DCEAEE;
-    --sidebar-bg:#F3F9FA;
+    --bg:#EEF1F4;
     --card-bg:#FFFFFF;
-    --header-bg:#F6FBFC;
-    --text:#0A2530;
-    --text-secondary:#4C6672;
-    --border:rgba(9,110,110,.22);
-    --shadow:0 14px 34px rgba(9,54,64,.12), 0 2px 8px rgba(9,54,64,.06);
-    --glow:0 0 0 1px rgba(9,150,145,.3), 0 0 26px rgba(16,215,200,.22);
-    --surface-2:rgba(9,74,84,.05);
-    --surface-3:rgba(9,74,84,.09);
+    --header-bg:#FFFFFF;
+    --text:#101B22;
+    --text-secondary:#647680;
+    --border:rgba(20,40,48,.09);
+    --shadow:0 1px 2px rgba(16,40,48,.04), 0 14px 30px rgba(16,40,48,.08);
+    --glow:0 0 0 1px rgba(9,150,145,.22), 0 0 18px rgba(16,215,200,.14);
+    --surface-2:rgba(20,40,48,.035);
+    --surface-3:rgba(20,40,48,.06);
+  }
+
+  [data-theme="light"] .sidebar{
+    box-shadow:8px 0 30px rgba(16,40,48,.10);
+  }
+  [data-theme="light"] .topbar{
+    box-shadow:0 4px 20px rgba(16,40,48,.04);
+  }
+  [data-theme="light"] .card{
+    border-color:rgba(13,60,70,.09);
+  }
+  [data-theme="light"] .kpi-icon{
+    background:rgba(16,196,188,.10);
   }
 
   *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
@@ -63,9 +80,8 @@
 
   [data-theme="light"]{
     background:
-      radial-gradient(ellipse 1000px 560px at 10% -12%, rgba(16,196,188,.20), transparent 60%),
-      radial-gradient(ellipse 800px 560px at 100% 0%, rgba(10,150,145,.14), transparent 55%),
-      radial-gradient(ellipse 900px 700px at 50% 120%, rgba(16,196,188,.10), transparent 60%),
+      radial-gradient(ellipse 1000px 520px at 12% -14%, rgba(16,196,188,.045), transparent 60%),
+      radial-gradient(ellipse 800px 520px at 100% 0%, rgba(10,150,145,.03), transparent 55%),
       var(--bg);
   }
 
@@ -89,8 +105,9 @@
   /* ================= SIDEBAR ================= */
   .sidebar{
     width:var(--sidebar-w);
-    background:linear-gradient(180deg, var(--sidebar-bg), rgba(16,215,200,.03) 120%);
-    border-right:1px solid var(--border);
+    background:linear-gradient(180deg, var(--sb-bg), var(--sb-bg-2) 120%);
+    border-right:1px solid var(--sb-border);
+    color:var(--sb-text);
     position:fixed;
     top:0; left:0; bottom:0;
     display:flex;
@@ -104,7 +121,7 @@
   .sidebar-brand{
     display:flex; align-items:center; gap:12px;
     padding:26px 24px;
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid var(--sb-border);
     white-space:nowrap;
     overflow:hidden;
   }
@@ -118,8 +135,8 @@
   }
   .brand-text{ display:flex; flex-direction:column; opacity:1; transition:opacity var(--transition); }
   .sidebar.collapsed .brand-text{ opacity:0; width:0; }
-  .brand-text strong{ font-size:16px; letter-spacing:.5px; font-weight:800; }
-  .brand-text span{ font-size:11px; color:var(--text-secondary); letter-spacing:1.5px; text-transform:uppercase; }
+  .brand-text strong{ font-size:16px; letter-spacing:.5px; font-weight:800; color:var(--sb-text); }
+  .brand-text span{ font-size:11px; color:var(--sb-text-secondary); letter-spacing:1.5px; text-transform:uppercase; }
 
   .sidebar-nav{
     flex:1;
@@ -134,8 +151,8 @@
     font-size:10.5px;
     letter-spacing:1.5px;
     text-transform:uppercase;
-    color:var(--text-secondary);
-    opacity:.6;
+    color:var(--sb-text-secondary);
+    opacity:.7;
     padding:14px 12px 6px;
     white-space:nowrap;
   }
@@ -145,7 +162,7 @@
     display:flex; align-items:center; gap:14px;
     padding:12px 14px;
     border-radius:14px;
-    color:var(--text-secondary);
+    color:var(--sb-text-secondary);
     font-size:14.5px;
     font-weight:500;
     transition:all var(--transition);
@@ -159,7 +176,7 @@
   .sidebar.collapsed .nav-item{ justify-content:center; }
 
   .nav-item:hover{
-    color:var(--text);
+    color:var(--sb-text);
     background:rgba(16,215,200,.08);
     box-shadow:var(--glow);
     transform:translateX(2px);
@@ -186,15 +203,15 @@
 
   .sidebar-footer{
     padding:18px 14px 22px;
-    border-top:1px solid var(--border);
+    border-top:1px solid var(--sb-border);
   }
   .collapse-btn{
     width:100%;
     display:flex; align-items:center; justify-content:center; gap:10px;
     padding:11px;
     border-radius:14px;
-    color:var(--text-secondary);
-    border:1px solid var(--border);
+    color:var(--sb-text-secondary);
+    border:1px solid var(--sb-border);
     transition:all var(--transition);
     font-size:13px;
   }
