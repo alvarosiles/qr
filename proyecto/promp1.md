@@ -1,6 +1,4 @@
-Aquí tienes un prompt bien detallado para Claude. Está pensado para que genere un **dashboard administrativo moderno**, inspirado en el estilo de Impuestos Nacionales de Bolivia, **pero sin copiarlo**, mejorando la experiencia visual y usando un diseño más premium.
-
----
+ 
 
 # PROMPT PARA CLAUDE
 

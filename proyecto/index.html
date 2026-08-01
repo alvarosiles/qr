@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus Tributario · Panel Administrativo</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== LOADER ===================== -->
+<div class="app-loader" id="appLoader">
+  <div class="loader-ring"></div>
+  <span class="loader-text">Cargando Nexus Tributario…</span>
+</div>
+
+<!-- ===================== OVERLAY (mobile sidebar) ===================== -->
+<div class="overlay" id="overlay"></div>
+
+<div class="app-shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2L28 8V16C28 22.6 22.9 28.6 16 30C9.1 28.6 4 22.6 4 16V8L16 2Z" fill="url(#brandGrad)" opacity="0.18"/>
+          <path d="M16 2L28 8V16C28 22.6 22.9 28.6 16 30C9.1 28.6 4 22.6 4 16V8L16 2Z" stroke="url(#brandGrad)" stroke-width="1.6"/>
+          <path d="M11 16.5L14.3 19.8L21 12.5" stroke="#00E6B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandGrad" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#18F2D4"/>
+              <stop offset="1" stop-color="#27C4FF"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Nexus<strong>Tributario</strong></span>
+        <span class="brand-sub">Oficina Virtual · Enterprise</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <span class="nav-group-label">General</span>
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-view="estado">
+          <i data-lucide="shield-check"></i>
+          <span>Estado Tributario</span>
+        </a>
+        <a href="#" class="nav-item" data-view="facturacion">
+          <i data-lucide="receipt"></i>
+          <span>Facturación</span>
+          <span class="nav-badge">12</span>
+        </a>
+        <a href="#" class="nav-item" data-view="declaraciones">
+          <i data-lucide="file-text"></i>
+          <span>Declaraciones</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-group-label">Gestión</span>
+        <a href="#" class="nav-item" data-view="pagos">
+          <i data-lucide="credit-card"></i>
+          <span>Pagos</span>
+        </a>
+        <a href="#" class="nav-item" data-view="certificados">
+          <i data-lucide="badge-check"></i>
+          <span>Certificados</span>
+        </a>
+        <a href="#" class="nav-item" data-view="contribuyentes">
+          <i data-lucide="users"></i>
+          <span>Contribuyentes</span>
+        </a>
+        <a href="#" class="nav-item" data-view="reportes">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Reportes</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-group-label">Sistema</span>
+        <a href="#" class="nav-item" data-view="seguridad">
+          <i data-lucide="lock"></i>
+          <span>Seguridad</span>
+        </a>
+        <a href="#" class="nav-item" data-view="config">
+          <i data-lucide="settings"></i>
+          <span>Configuración</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        Sistema operativo
+      </div>
+      <a href="#" class="nav-item nav-item-ghost">
+        <i data-lucide="log-out"></i>
+        <span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar">
+      <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Abrir menú">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="navbar-search">
+        <i data-lucide="search"></i>
+        <input type="text" placeholder="Buscar NIT, comprobante, trámite…" id="globalSearch">
+        <kbd>Ctrl K</kbd>
+      </div>
+
+      <div class="navbar-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="Modo oscuro/claro" title="Cambiar tema">
+          <i data-lucide="moon"></i>
+        </button>
+
+        <button class="icon-btn" id="helpBtn" aria-label="Ayuda" title="Ayuda">
+          <i data-lucide="circle-help"></i>
+        </button>
+
+        <div class="dropdown-wrap">
+          <button class="icon-btn" id="messagesBtn" aria-label="Mensajes" title="Mensajes">
+            <i data-lucide="mail"></i>
+            <span class="dot-badge">3</span>
+          </button>
+          <div class="dropdown-panel" id="messagesPanel">
+            <div class="dropdown-header">
+              <span>Mensajes</span>
+              <a href="#">Ver todos</a>
+            </div>
+            <div class="dropdown-list">
+              <div class="dropdown-item">
+                <div class="avatar avatar-sm">MC</div>
+                <div class="dropdown-item-body">
+                  <p><strong>María Condori</strong> envió un comprobante</p>
+                  <span>Hace 12 min</span>
+                </div>
+              </div>
+              <div class="dropdown-item">
+                <div class="avatar avatar-sm">JQ</div>
+                <div class="dropdown-item-body">
+                  <p><strong>Jorge Quispe</strong> consultó su NIT</p>
+                  <span>Hace 40 min</span>
+                </div>
+              </div>
+              <div class="dropdown-item">
+                <div class="avatar avatar-sm">RS</div>
+                <div class="dropdown-item-body">
+                  <p><strong>Soporte técnico</strong> respondió tu ticket</p>
+                  <span>Hace 2 h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dropdown-wrap">
+          <button class="icon-btn" id="notifBtn" aria-label="Notificaciones" title="Notificaciones">
+            <i data-lucide="bell"></i>
+            <span class="dot-badge">5</span>
+          </button>
+          <div class="dropdown-panel" id="notifPanel">
+            <div class="dropdown-header">
+              <span>Notificaciones</span>
+              <a href="#">Marcar leídas</a>
+            </div>
+            <div class="dropdown-list">
+              <div class="dropdown-item">
+                <div class="notif-icon warning"><i data-lucide="alert-triangle"></i></div>
+                <div class="dropdown-item-body">
+                  <p>Vence declaración F-200 en <strong>3 días</strong></p>
+                  <span>Hace 1 h</span>
+                </div>
+              </div>
+              <div class="dropdown-item">
+                <div class="notif-icon success"><i data-lucide="check-circle-2"></i></div>
+                <div class="dropdown-item-body">
+                  <p>Pago verificado correctamente</p>
+                  <span>Hace 3 h</span>
+                </div>
+              </div>
+              <div class="dropdown-item">
+                <div class="notif-icon error"><i data-lucide="x-circle"></i></div>
+                <div class="dropdown-item-body">
+                  <p>Certificado NIT-2291 rechazado</p>
+                  <span>Ayer</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navbar-divider"></div>
+
+        <div class="dropdown-wrap">
+          <button class="user-chip" id="userBtn">
+            <div class="avatar">AS</div>
+            <div class="user-chip-info">
+              <span class="user-name">Alvaro Siles</span>
+              <span class="user-role">Administrador</span>
+            </div>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="dropdown-panel dropdown-panel-right" id="userPanel">
+            <div class="dropdown-list">
+              <a href="#" class="dropdown-item dropdown-item-link">
+                <i data-lucide="user"></i> Mi perfil
+              </a>
+              <a href="#" class="dropdown-item dropdown-item-link">
+                <i data-lucide="settings"></i> Preferencias
+              </a>
+              <a href="#" class="dropdown-item dropdown-item-link">
+                <i data-lucide="shield"></i> Seguridad
+              </a>
+              <div class="dropdown-sep"></div>
+              <a href="#" class="dropdown-item dropdown-item-link danger">
+                <i data-lucide="log-out"></i> Cerrar sesión
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== CONTENT ===================== -->
+    <main class="content">
+
+      <div class="page-head">
+        <div>
+          <h1>Hola, Alvaro <span class="wave">👋</span></h1>
+          <p>Este es el resumen de tu actividad tributaria — 31 de julio, 2026.</p>
+        </div>
+        <div class="page-head-actions">
+          <button class="btn btn-secondary">
+            <i data-lucide="download"></i> Exportar
+          </button>
+          <button class="btn btn-primary" id="newProcBtn">
+            <i data-lucide="plus"></i> Nuevo trámite
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== KPI ROW ===== -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon accent"><i data-lucide="wallet"></i></div>
+          <div class="kpi-body">
+            <span class="kpi-label">Recaudación del mes</span>
+            <span class="kpi-value">Bs 284.9K</span>
+            <span class="kpi-trend up"><i data-lucide="trending-up"></i> 12.4% vs mes anterior</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon success"><i data-lucide="file-check-2"></i></div>
+          <div class="kpi-body">
+            <span class="kpi-label">Declaraciones al día</span>
+            <span class="kpi-value">1,248</span>
+            <span class="kpi-trend up"><i data-lucide="trending-up"></i> 4.1% vs mes anterior</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon warning"><i data-lucide="clock"></i></div>
+          <div class="kpi-body">
+            <span class="kpi-label">Trámites pendientes</span>
+            <span class="kpi-value">37</span>
+            <span class="kpi-trend down"><i data-lucide="trending-down"></i> 2.3% vs mes anterior</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon info"><i data-lucide="users"></i></div>
+          <div class="kpi-body">
+            <span class="kpi-label">Contribuyentes activos</span>
+            <span class="kpi-value">9,532</span>
+            <span class="kpi-trend up"><i data-lucide="trending-up"></i> 1.8% vs mes anterior</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== FEATURE CARDS ===== -->
+      <section class="section-block">
+        <div class="section-head">
+          <h2>Accesos rápidos</h2>
+          <p>Gestiona tus obligaciones tributarias en un solo lugar</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-top">
+              <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+              <span class="badge badge-success">Al día</span>
+            </div>
+            <h3>Estado Tributario</h3>
+            <p>Consulta tu situación fiscal actual y el historial de cumplimiento.</p>
+            <a class="feature-link" href="#">Ver detalle <i data-lucide="arrow-right"></i></a>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-top">
+              <div class="feature-icon"><i data-lucide="receipt"></i></div>
+              <span class="badge badge-info">12 nuevas</span>
+            </div>
+            <h3>Facturación</h3>
+            <p>Emite, valida y administra tus facturas electrónicas fácilmente.</p>
+            <a class="feature-link" href="#">Ver detalle <i data-lucide="arrow-right"></i></a>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-top">
+              <div class="feature-icon"><i data-lucide="file-text"></i></div>
+              <span class="badge badge-warning">2 vencen pronto</span>
+            </div>
+            <h3>Declaraciones</h3>
+            <p>Presenta formularios y revisa el estado de tus declaraciones juradas.</p>
+            <a class="feature-link" href="#">Ver detalle <i data-lucide="arrow-right"></i></a>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-top">
+              <div class="feature-icon"><i data-lucide="credit-card"></i></div>
+              <span class="badge badge-success">Sin deuda</span>
+            </div>
+            <h3>Pagos</h3>
+            <p>Realiza pagos en línea y descarga tus comprobantes al instante.</p>
+            <a class="feature-link" href="#">Ver detalle <i data-lucide="arrow-right"></i></a>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-top">
+              <div class="feature-icon"><i data-lucide="badge-check"></i></div>
+              <span class="badge badge-info">4 activos</span>
+            </div>
+            <h3>Certificados</h3>
+            <p>Genera y descarga certificados digitales con validez legal.</p>
+            <a class="feature-link" href="#">Ver detalle <i data-lucide="arrow-right"></i></a>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-top">
+              <div class="feature-icon"><i data-lucide="activity"></i></div>
+              <span class="badge badge-neutral">Tiempo real</span>
+            </div>
+            <h3>Actividad reciente</h3>
+            <p>Monitorea cada acción realizada dentro de tu cuenta tributaria.</p>
+            <a class="feature-link" href="#">Ver detalle <i data-lucide="arrow-right"></i></a>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== CHARTS ===== -->
+      <section class="section-block">
+        <div class="section-head">
+          <h2>Análisis financiero</h2>
+          <p>Tendencias de los últimos 6 meses</p>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card chart-card-lg">
+            <div class="chart-card-head">
+              <div>
+                <h3>Impuestos mensuales</h3>
+                <span>Monto declarado por mes (Bs)</span>
+              </div>
+              <div class="chart-legend-single">
+                <span class="dot" style="background:var(--accent)"></span> Impuestos
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartImpuestos"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-head">
+              <div>
+                <h3>Pagos por estado</h3>
+                <span>Distribución actual</span>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap chart-canvas-wrap-sm">
+              <canvas id="chartPagos"></canvas>
+            </div>
+            <div class="chart-status-legend">
+              <span><i class="dot" style="background:var(--success)"></i> Pagado <b>78%</b></span>
+              <span><i class="dot" style="background:var(--warning)"></i> Pendiente <b>15%</b></span>
+              <span><i class="dot" style="background:var(--error)"></i> Vencido <b>7%</b></span>
+            </div>
+          </div>
+
+          <div class="chart-card chart-card-lg">
+            <div class="chart-card-head">
+              <div>
+                <h3>Facturación</h3>
+                <span>Facturas emitidas vs monto total (Bs miles)</span>
+              </div>
+              <div class="chart-legend-single">
+                <span class="dot" style="background:var(--accent-blue)"></span> Facturación
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartFacturacion"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== TABLE + TIMELINE ===== -->
+      <section class="split-grid">
+        <div class="table-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Últimos comprobantes</h3>
+              <span>Facturas y recibos recientes</span>
+            </div>
+            <button class="btn btn-ghost btn-sm">Ver todo <i data-lucide="arrow-right"></i></button>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Comprobante</th>
+                  <th>Contribuyente</th>
+                  <th>Tipo</th>
+                  <th>Monto</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- filled by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Actividad reciente</h3>
+              <span>Últimas 24 horas</span>
+            </div>
+          </div>
+          <ul class="timeline" id="timelineList">
+            <!-- filled by app.js -->
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <span>© 2026 Nexus Tributario · Panel administrativo</span>
+      <span>v2.4.0</span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3>Nuevo trámite</h3>
+      <button class="icon-btn" id="modalClose"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <label class="field">
+        <span>Tipo de trámite</span>
+        <select>
+          <option>Declaración jurada</option>
+          <option>Solicitud de certificado</option>
+          <option>Registro de factura</option>
+          <option>Reclamo / Consulta</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>NIT / CI</span>
+        <input type="text" placeholder="Ej. 1029384057">
+      </label>
+      <label class="field">
+        <span>Descripción</span>
+        <textarea rows="3" placeholder="Detalle del trámite…"></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" id="modalCancel">Cancelar</button>
+      <button class="btn btn-primary" id="modalSubmit"><i data-lucide="check"></i> Crear trámite</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
