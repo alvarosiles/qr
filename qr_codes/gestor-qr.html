@@ -1250,11 +1250,47 @@
         });
 
         // ============================================
+        // Load Initial QR Data
+        // ============================================
+        async function loadInitialQRData() {
+            try {
+                const response = await fetch('qr-data.json');
+                if (!response.ok) return; // Si no existe el archivo, continuar sin error
+
+                const qrDataArray = await response.json();
+
+                // Verificar si ya existen QR en la BD
+                const existingQR = await getAllFromIndexedDB();
+                if (existingQR.length > 0) return; // Si ya hay QR, no cargar iniciales
+
+                // Cargar los QR iniciales
+                for (const qrData of qrDataArray) {
+                    const qr = {
+                        id: Date.now() + Math.random(),
+                        image: qrData.image,
+                        name: qrData.name,
+                        description: '',
+                        amount: ''
+                    };
+                    await saveToIndexedDB(qr);
+                }
+
+                if (qrDataArray.length > 0) {
+                    showToast(`${qrDataArray.length} QR iniciales cargados`);
+                }
+            } catch (err) {
+                // No mostrar error si el archivo no existe
+                console.log('Info: qr-data.json no encontrado o no pudo procesarse');
+            }
+        }
+
+        // ============================================
         // Initialize App
         // ============================================
         async function init() {
             try {
                 await initDB();
+                await loadInitialQRData();
                 await loadQRList();
             } catch (err) {
                 showToast('Error al inicializar la aplicación: ' + err.message, 'error');
