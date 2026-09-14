@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Gestor de QR Bancarios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --bg-card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --bg-card: #1e293b;
+                --text: #f1f5f9;
+                --text-light: #cbd5e1;
+                --border: #334155;
+            }
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--text-light);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-icon-only {
+            padding: 0.5rem;
+            width: 44px;
+            height: 44px;
+            justify-content: center;
+        }
+
+        /* Add QR Section */
+        .add-qr-section {
+            margin-bottom: 2rem;
+        }
+
+        .add-qr-btn {
+            width: 100%;
+            padding: 2rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: 2px dashed var(--border);
+            background: var(--bg-card);
+        }
+
+        .add-qr-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .qr-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .qr-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .qr-card-image {
+            aspect-ratio: 1;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .qr-card-image img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .qr-card-content {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .qr-card-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .qr-card-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .qr-card-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .qr-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .qr-card-actions button {
+            flex: 1;
+            min-width: 100px;
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .close-btn {
+            background: none;
+            font-size: 1.5rem;
+            padding: 0;
+            width: auto;
+            height: auto;
+        }
+
+        /* Crop Editor */
+        .crop-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .crop-canvas-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        #cropCanvas {
+            position: absolute;
+            touch-action: none;
+            cursor: grab;
+        }
+
+        #cropCanvas:active {
+            cursor: grabbing;
+        }
+
+        .crop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .crop-frame {
+            position: absolute;
+            border: 3px solid var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        }
+
+        .crop-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .crop-controls button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .zoom-display {
+            min-width: 80px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* View Modal */
+        .view-modal .modal-content {
+            max-width: 600px;
+        }
+
+        .view-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        /* Confirmation Dialog */
+        .confirm-text {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+            }
+
+            .header {
+                margin-bottom: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .qr-card-actions button {
+                font-size: 0.75rem;
+                padding: 0.4rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 1rem;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            color: var(--text);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s;
+            z-index: 2000;
+            max-width: 300px;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Safe area support for notch devices */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(0px, env(safe-area-inset-left));
+                padding-right: max(0px, env(safe-area-inset-right));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1>📱 Gestor de QR Bancarios</h1>
+            <p>Los datos se guardan localmente en tu dispositivo. Sin servidores, completamente privado.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Add QR Section -->
+        <div class="add-qr-section">
+            <button class="add-qr-btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                ➕ Agregar QR Bancario
+            </button>
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp">
+            <input type="file" id="multiFileInput" accept="image/png,image/jpeg,image/webp" multiple style="display: none;">
+        </div>
+        <div style="margin-bottom: 2rem; text-align: center;">
+            <button class="btn-secondary" onclick="document.getElementById('multiFileInput').click()">
+                📁 Cargar Múltiples QR
+            </button>
+        </div>
+
+        <!-- QR Gallery -->
+        <div id="gallery" class="gallery"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+            <div class="empty-state-icon">🏦</div>
+            <h3>Sin QR agregados</h3>
+            <p>Comienza agregando tu primer código QR bancario</p>
+        </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div id="cropModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Recortar QR</h2>
+                <button class="close-btn" onclick="closeCropModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    📍 Mueve y ajusta el cuadrado para seleccionar solo el QR. Debe quedar perfectamente encajado.
+                </div>
+                <div class="crop-container">
+                    <div class="crop-canvas-wrapper">
+                        <canvas id="cropCanvas"></canvas>
+                        <div class="crop-overlay">
+                            <div id="cropFrame" class="crop-frame"></div>
+                        </div>
+                    </div>
+                    <div class="zoom-controls">
+                        <button class="btn-secondary btn-small" onclick="zoomCrop(-0.1)">🔍−</button>
+                        <div class="zoom-display"><span id="zoomLevel">100</span>%</div>
+                        <button class="btn-secondary btn-small" onclick="zoomCrop(0.1)">🔍+</button>
+                    </div>
+                    <div class="crop-controls">
+                        <button class="btn-secondary" onclick="closeCropModal()">Cancelar</button>
+                        <button class="btn-success" onclick="confirmCrop()">✓ Recortar y Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Info Modal (add/edit) -->
+    <div id="qrInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="qrInfoTitle">Agregar QR</h2>
+                <button class="close-btn" onclick="closeQrInfoModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="qrInfoForm" onsubmit="saveQrInfo(event)">
+                    <div class="form-group">
+                        <label for="qrName">Nombre/Título *</label>
+                        <input type="text" id="qrName" required placeholder="ej: Banco Nacional">
+                    </div>
+                    <div class="form-group">
+                        <label for="qrDescription">Descripción (opcional)</label>
+                        <textarea id="qrDescription" placeholder="ej: Pago pedido #123"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="qrAmount">Monto (opcional)</label>
+                        <input type="text" id="qrAmount" placeholder="ej: Bs 50">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeQrInfoModal()">Cancelar</button>
+                <button class="btn-primary" onclick="document.getElementById('qrInfoForm').dispatchEvent(new Event('submit'))">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View QR Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="viewTitle">QR</h2>
+                <button class="close-btn" onclick="closeViewModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <img id="viewImage" class="view-image" alt="QR">
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit QR Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar QR</h2>
+                <button class="close-btn" onclick="closeEditModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" onsubmit="saveEditedQr(event)">
+                    <div class="form-group">
+                        <label for="editName">Nombre/Título *</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Descripción (opcional)</label>
+                        <textarea id="editDescription"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAmount">Monto (opcional)</label>
+                        <input type="text" id="editAmount">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                <button class="btn-primary" onclick="document.getElementById('editForm').dispatchEvent(new Event('submit'))">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar eliminación</h2>
+                <button class="close-btn" onclick="closeDeleteModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="confirm-text">¿Estás seguro de que deseas eliminar este QR? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="btn-danger" onclick="confirmDelete()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // IndexedDB Setup
+        // ============================================
+        const DB_NAME = 'QRBancariosDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'qrcodes';
+
+        let db = null;
+
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        async function saveToIndexedDB(qrData) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put(qrData);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        async function getFromIndexedDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(id);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        async function getAllFromIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        async function deleteFromIndexedDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(id);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // ============================================
+        // State Management
+        // ============================================
+        let currentQRData = null;
+        let qrList = [];
+        let cropState = {
+            image: null,
+            zoom: 1,
+            panX: 0,
+            panY: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0
+        };
+
+        const cropFrame = document.getElementById('cropFrame');
+        const cropCanvas = document.getElementById('cropCanvas');
+        const cropCanvasCtx = cropCanvas.getContext('2d');
+
+        // ============================================
+        // UI Functions
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.3s reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ============================================
+        // File Upload and Crop
+        // ============================================
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        document.getElementById('multiFileInput').addEventListener('change', handleMultipleFiles);
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    cropState.image = img;
+                    cropState.zoom = 1;
+                    cropState.panX = 0;
+                    cropState.panY = 0;
+                    drawCropCanvas();
+                    openModal('cropModal');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Reset file input
+            e.target.value = '';
+        }
+
+        // Manejar múltiples archivos (carga en lote)
+        async function handleMultipleFiles(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            let processed = 0;
+            const total = files.length;
+
+            for (const file of files) {
+                await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = async () => {
+                            // Auto-crop: toma el área central cuadrada
+                            const size = Math.min(img.width, img.height);
+                            const x = (img.width - size) / 2;
+                            const y = (img.height - size) / 2;
+
+                            const canvas = document.createElement('canvas');
+                            canvas.width = 512;
+                            canvas.height = 512;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, x, y, size, size, 0, 0, 512, 512);
+
+                            const croppedImage = canvas.toDataURL('image/png');
+                            const qrData = {
+                                id: Date.now() + Math.random(),
+                                image: croppedImage,
+                                name: file.name.replace(/\.[^/.]+$/, ""),
+                                description: '',
+                                amount: ''
+                            };
+
+                            await saveToIndexedDB(qrData);
+                            processed++;
+                            resolve();
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            showToast(`${processed} QR cargados correctamente`);
+            await loadQRList();
+            e.target.value = '';
+        }
+
+        function drawCropCanvas() {
+            if (!cropState.image) return;
+
+            const wrapper = document.querySelector('.crop-canvas-wrapper');
+            const size = wrapper.clientWidth;
+
+            cropCanvas.width = size;
+            cropCanvas.height = size;
+
+            cropCanvasCtx.fillStyle = 'white';
+            cropCanvasCtx.fillRect(0, 0, size, size);
+
+            const scaledWidth = cropState.image.width * cropState.zoom;
+            const scaledHeight = cropState.image.height * cropState.zoom;
+
+            // Center the image initially
+            if (cropState.panX === 0 && cropState.panY === 0 && cropState.zoom === 1) {
+                cropState.panX = (size - scaledWidth) / 2;
+                cropState.panY = (size - scaledHeight) / 2;
+            }
+
+            cropCanvasCtx.drawImage(
+                cropState.image,
+                cropState.panX,
+                cropState.panY,
+                scaledWidth,
+                scaledHeight
+            );
+
+            // Draw crop frame
+            cropFrame.style.width = size * 0.8 + 'px';
+            cropFrame.style.height = size * 0.8 + 'px';
+            cropFrame.style.left = size * 0.1 + 'px';
+            cropFrame.style.top = size * 0.1 + 'px';
+        }
+
+        function zoomCrop(delta) {
+            cropState.zoom = Math.max(0.5, Math.min(3, cropState.zoom + delta));
+            document.getElementById('zoomLevel').textContent = Math.round(cropState.zoom * 100);
+            drawCropCanvas();
+        }
+
+        // Touch and mouse events for crop canvas
+        cropCanvas.addEventListener('pointerdown', (e) => {
+            cropState.isDragging = true;
+            cropState.startX = e.clientX - cropState.panX;
+            cropState.startY = e.clientY - cropState.panY;
+        });
+
+        document.addEventListener('pointermove', (e) => {
+            if (!cropState.isDragging || !cropCanvas.parentElement.contains(e.target)) return;
+
+            cropState.panX = e.clientX - cropState.startX;
+            cropState.panY = e.clientY - cropState.startY;
+            drawCropCanvas();
+        });
+
+        document.addEventListener('pointerup', () => {
+            cropState.isDragging = false;
+        });
+
+        function confirmCrop() {
+            if (!cropState.image) return;
+
+            const size = cropCanvas.width;
+            const cropSize = size * 0.8;
+            const cropX = size * 0.1;
+            const cropY = size * 0.1;
+
+            // Create a temporary canvas for cropping
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cropSize;
+            tempCanvas.height = cropSize;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            tempCtx.drawImage(
+                cropCanvas,
+                cropX, cropY, cropSize, cropSize,
+                0, 0, cropSize, cropSize
+            );
+
+            // Store the cropped image
+            const croppedImage = tempCanvas.toDataURL('image/png');
+            currentQRData = {
+                id: Date.now(),
+                image: croppedImage,
+                name: '',
+                description: '',
+                amount: ''
+            };
+
+            closeCropModal();
+            openQrInfoModal();
+        }
+
+        function closeCropModal() {
+            closeModal('cropModal');
+            cropState.image = null;
+        }
+
+        // ============================================
+        // QR Info Modal
+        // ============================================
+        function openQrInfoModal() {
+            document.getElementById('qrInfoTitle').textContent = 'Agregar QR';
+            document.getElementById('qrInfoForm').reset();
+            document.getElementById('qrName').focus();
+            openModal('qrInfoModal');
+        }
+
+        function closeQrInfoModal() {
+            closeModal('qrInfoModal');
+            currentQRData = null;
+        }
+
+        function saveQrInfo(e) {
+            e.preventDefault();
+            if (!currentQRData) return;
+
+            currentQRData.name = document.getElementById('qrName').value;
+            currentQRData.description = document.getElementById('qrDescription').value;
+            currentQRData.amount = document.getElementById('qrAmount').value;
+
+            saveToIndexedDB(currentQRData).then(() => {
+                showToast('QR guardado correctamente');
+                closeQrInfoModal();
+                loadQRList();
+            }).catch(err => {
+                showToast('Error al guardar: ' + err.message, 'error');
+            });
+        }
+
+        // ============================================
+        // Gallery Management
+        // ============================================
+        async function loadQRList() {
+            try {
+                qrList = await getAllFromIndexedDB();
+                renderGallery();
+            } catch (err) {
+                showToast('Error al cargar los QR: ' + err.message, 'error');
+            }
+        }
+
+        function renderGallery() {
+            const gallery = document.getElementById('gallery');
+            const emptyState = document.getElementById('emptyState');
+
+            if (qrList.length === 0) {
+                gallery.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            gallery.innerHTML = qrList.map(qr => `
+                <div class="qr-card">
+                    <div class="qr-card-image" onclick="viewQR('${qr.id}')">
+                        <img src="${qr.image}" alt="${qr.name}">
+                    </div>
+                    <div class="qr-card-content">
+                        <div class="qr-card-title">${escapeHtml(qr.name)}</div>
+                        ${qr.description ? `<div class="qr-card-description">${escapeHtml(qr.description)}</div>` : ''}
+                        ${qr.amount ? `<div class="qr-card-amount">${escapeHtml(qr.amount)}</div>` : ''}
+                        <div class="qr-card-actions">
+                            <button class="btn-secondary btn-small" onclick="openEditModal('${qr.id}')">✏️ Editar</button>
+                            <button class="btn-secondary btn-small" onclick="shareQR('${qr.id}')">📤 Compartir</button>
+                            <button class="btn-secondary btn-small" onclick="downloadQR('${qr.id}')">⬇️ Descargar</button>
+                            <button class="btn-danger btn-small" onclick="openDeleteModal('${qr.id}')">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // View QR
+        // ============================================
+        function viewQR(id) {
+            const qr = qrList.find(q => q.id == id);
+            if (!qr) return;
+
+            document.getElementById('viewTitle').textContent = escapeHtml(qr.name);
+            document.getElementById('viewImage').src = qr.image;
+            openModal('viewModal');
+        }
+
+        function closeViewModal() {
+            closeModal('viewModal');
+        }
+
+        // ============================================
+        // Edit QR
+        // ============================================
+        let editingId = null;
+
+        function openEditModal(id) {
+            const qr = qrList.find(q => q.id == id);
+            if (!qr) return;
+
+            editingId = id;
+            document.getElementById('editName').value = qr.name;
+            document.getElementById('editDescription').value = qr.description;
+            document.getElementById('editAmount').value = qr.amount;
+
+            openModal('editModal');
+        }
+
+        function closeEditModal() {
+            closeModal('editModal');
+            editingId = null;
+        }
+
+        function saveEditedQr(e) {
+            e.preventDefault();
+            if (editingId === null) return;
+
+            const qr = qrList.find(q => q.id == editingId);
+            if (!qr) return;
+
+            qr.name = document.getElementById('editName').value;
+            qr.description = document.getElementById('editDescription').value;
+            qr.amount = document.getElementById('editAmount').value;
+
+            saveToIndexedDB(qr).then(() => {
+                showToast('QR actualizado');
+                closeEditModal();
+                loadQRList();
+            }).catch(err => {
+                showToast('Error al actualizar: ' + err.message, 'error');
+            });
+        }
+
+        // ============================================
+        // Delete QR
+        // ============================================
+        let deleteId = null;
+
+        function openDeleteModal(id) {
+            deleteId = id;
+            openModal('deleteModal');
+        }
+
+        function closeDeleteModal() {
+            closeModal('deleteModal');
+            deleteId = null;
+        }
+
+        function confirmDelete() {
+            if (deleteId === null) return;
+
+            deleteFromIndexedDB(deleteId).then(() => {
+                showToast('QR eliminado');
+                closeDeleteModal();
+                loadQRList();
+            }).catch(err => {
+                showToast('Error al eliminar: ' + err.message, 'error');
+            });
+        }
+
+        // ============================================
+        // Share and Download
+        // ============================================
+        async function shareQR(id) {
+            const qr = qrList.find(q => q.id == id);
+            if (!qr) return;
+
+            try {
+                const blob = await dataURLtoBlob(qr.image);
+                const file = new File([blob], `QR-${escapeHtml(qr.name).replace(/\s+/g, '-')}.png`, { type: 'image/png' });
+
+                // Intentar compartir nativo
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: qr.name,
+                        text: qr.description || 'Código QR bancario'
+                    });
+                    showToast('QR compartido');
+                } else {
+                    // Fallback: descargar
+                    downloadFile(file);
+                    showToast('QR descargado (compartir no soportado)');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    showToast('Error al compartir: ' + err.message, 'error');
+                }
+            }
+        }
+
+        async function downloadQR(id) {
+            const qr = qrList.find(q => q.id == id);
+            if (!qr) return;
+
+            try {
+                const blob = await dataURLtoBlob(qr.image);
+                const file = new File([blob], `QR-${escapeHtml(qr.name).replace(/\s+/g, '-')}.png`, { type: 'image/png' });
+                downloadFile(file);
+                showToast('QR descargado');
+            } catch (err) {
+                showToast('Error al descargar: ' + err.message, 'error');
+            }
+        }
+
+        async function dataURLtoBlob(dataURL) {
+            const response = await fetch(dataURL);
+            return response.blob();
+        }
+
+        function downloadFile(file) {
+            const url = URL.createObjectURL(file);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================
+        // Window Resize Handler for Crop
+        // ============================================
+        window.addEventListener('resize', () => {
+            if (cropState.image && document.getElementById('cropModal').classList.contains('active')) {
+                drawCropCanvas();
+            }
+        });
+
+        // ============================================
+        // Initialize App
+        // ============================================
+        async function init() {
+            try {
+                await initDB();
+                await loadQRList();
+            } catch (err) {
+                showToast('Error al inicializar la aplicación: ' + err.message, 'error');
+            }
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
